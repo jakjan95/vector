@@ -1,6 +1,10 @@
 #include "gtest/gtest.h"
 
-TEST(Empty, TrueShouldBeTrue)
+#include "vector.hpp"
+
+TEST(Vector, DefaultConstructorShouldCreateEmptyVector)
 {
-    EXPECT_TRUE(true);
+    my_vec::vector<int> vec;
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.capacity(), 0);
 }
