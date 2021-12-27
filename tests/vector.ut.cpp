@@ -3,6 +3,10 @@
 
 #include "vector.hpp"
 
+constexpr int defaultValue = 0;
+constexpr int newValue = 5;
+constexpr std::size_t vectorCapacity = 6;
+
 TEST(Vector, DefaultConstructorShouldCreateEmptyVector)
 {
     my_vec::vector<int> vec;
@@ -21,10 +25,8 @@ TEST(Vector, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithD
 TEST(Vector, SquareBracketOperatorShouldReturnReferenceToElementAtSpecificPositon)
 {
     constexpr std::size_t vectorSize = 1;
-    constexpr int defaultValue = 0;
     my_vec::vector<int> vec(vectorSize);
     EXPECT_EQ(vec[0], defaultValue);
-    constexpr int newValue = 5;
     vec[0] = newValue;
     EXPECT_EQ(vec[0], newValue);
 }
@@ -46,7 +48,6 @@ TEST(Vector, ReserveShouldIncreaseVectorCapacity)
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorCapacity = 6;
-    constexpr int defaultValue = 0;
 
     my_vec::vector<int> vec(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
@@ -68,9 +69,7 @@ TEST(Vector, ResizeShouldResizesCointainerToContainCountElements)
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorSize = 4;
-    constexpr std::size_t vectorCapacity = 6;
-    constexpr int defaultValue = 0;
-
+    
     my_vec::vector<int> vec(vectorSize);
     vec.reserve(vectorCapacity);
 
@@ -93,7 +92,6 @@ TEST(Vector, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityO
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorSize = 4;
-    constexpr int defaultValue = 0;
 
     my_vec::vector<int> vec(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
@@ -114,10 +112,7 @@ TEST(Vector, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityO
 TEST(Vector, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
 {
     constexpr std::size_t vectorSize = 2;
-    constexpr std::size_t vectorCapacity = 6;
     constexpr std::size_t newVectorSize = 4;
-    constexpr int defaultValue = 0;
-    constexpr int newValue = 5;
 
     my_vec::vector<int> vec(vectorSize);
     vec.reserve(vectorCapacity);
