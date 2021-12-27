@@ -33,5 +33,12 @@ int main()
         std::cout << "Vector should have capacity equal to " << vec2NewCapacity << " \n";
     }
 
+    std::size_t vec2NewSize = 8;
+    vec2.resize(vec2NewSize);
+    if (vec2.size() == vec2NewSize && vec2.capacity() == vec2NewCapacity) {
+        std::cout << "Vector should have size equal to " << vec2NewSize << " \n";
+        std::cout << "Vector should have capacity equal to " << vec2NewCapacity << " \n";
+    }
+
     return 0;
 }

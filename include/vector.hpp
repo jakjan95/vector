@@ -17,6 +17,7 @@ public:
     std::size_t size() const { return size_; }
     void reserve (std::size_t new_cap);
     std::size_t capacity() const { return space_; }
+    void resize(std::size_t count, T value = T());
 
 private:
     T* elem_;
@@ -54,5 +55,17 @@ void vector<T>::reserve(std::size_t new_cap)
         elem_ = tmp;
         space_ = new_cap;
     }
+}
+
+template <typename T>
+void vector<T>::resize(std::size_t count, T value)
+{
+    reserve(count);
+    if (count > size()) {
+        for (std::size_t i = size(); i < count; ++i) {
+            elem_[i] = value;
+        }
+    }
+    size_ = count;
 }
 }

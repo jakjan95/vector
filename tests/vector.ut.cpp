@@ -63,3 +63,76 @@ TEST(Vector, ReserveShouldIncreaseVectorCapacity)
         EXPECT_EQ(vec[i], defaultValue);
     }
 }
+
+TEST(Vector, ResizeShouldResizesCointainerToContainCountElements)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr std::size_t newVectorSize = 4;
+    constexpr std::size_t vectorCapacity = 6;
+    constexpr int defaultValue = 0;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+
+    vec.resize(newVectorSize);
+
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+    for (std::size_t i = 0; i < newVectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+}
+
+TEST(Vector, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr std::size_t newVectorSize = 4;
+    constexpr int defaultValue = 0;
+
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorSize);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+
+    vec.resize(newVectorSize);
+
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), newVectorSize);
+    for (std::size_t i = 0; i < newVectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+}
+
+TEST(Vector, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr std::size_t vectorCapacity = 6;
+    constexpr std::size_t newVectorSize = 4;
+    constexpr int defaultValue = 0;
+    constexpr int newValue = 5;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+
+    vec.resize(newVectorSize, newValue);
+
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+
+    for (std::size_t i = vectorSize; i < newVectorSize; ++i) {
+        EXPECT_EQ(vec[i], newValue);
+    }
+}
