@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <utility>
 
 namespace my_vec {
 template <typename T>
@@ -23,6 +24,9 @@ public:
     std::size_t size() const { return size_; }
     void reserve (std::size_t new_cap);
     std::size_t capacity() const { return space_; }
+
+    void push_back(const T& value);
+    void push_back(T&& value);
     void resize(std::size_t count, T value = T());
 
 private:
@@ -61,6 +65,24 @@ void vector<T>::reserve(std::size_t new_cap)
         elem_ = tmp;
         space_ = new_cap;
     }
+}
+
+template <typename T>
+void vector<T>::push_back(const T& value)
+{
+    if (size() >= capacity()) {
+        reserve(2 * capacity());
+    }
+    elem_[size_++] = value;
+}
+
+template <typename T>
+void vector<T>::push_back(T&& value)
+{
+    if (size() >= capacity()) {
+        reserve(2 * capacity());
+    }
+    elem_[size_++] = std::move(value);
 }
 
 template <typename T>

@@ -49,5 +49,8 @@ int main()
         std::cout << "vec2 is not empty\n";
     }
 
+    vec2.push_back(5);
+    std::cout << "5 added at the end of vec2 by using push_back : vec2 last element == " << *std::prev(vec2.end()) << '\n';
+    
     return 0;
 }

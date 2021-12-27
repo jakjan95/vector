@@ -168,3 +168,53 @@ TEST(Vector, EmptyShouldReturnFalseWhenContainerHasElements)
     my_vec::vector<int> vec(vectorSize);
     EXPECT_FALSE(vec.empty());
 }
+
+TEST(Vector, PushBackShouldAddElementAtEndOfContainerAndIncrementSizeOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+    EXPECT_EQ(vec.size(), vectorSize);
+
+    vec.push_back(newValue);
+    
+    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(newValue, *lastElementOfVector);
+}
+
+TEST(Vector, PushBackShouldAddElementAtEndOfContainerWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacityOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorSize);
+
+    vec.push_back(newValue);
+
+    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    EXPECT_EQ(vec.capacity(), 2 * vectorSize);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(newValue, *lastElementOfVector);
+}
+
+TEST(Vector, PushBackShouldMoveElementAtEndOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+    EXPECT_EQ(vec.size(), vectorSize);
+
+    int valToMove = 2;
+    vec.push_back(std::move(valToMove));
+
+    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(valToMove, *lastElementOfVector);
+}
