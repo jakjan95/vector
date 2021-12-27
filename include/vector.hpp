@@ -15,8 +15,11 @@ public:
     constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
 
     T* begin() noexcept { return elem_; }
+    const T* begin() const noexcept { return elem_; }
     T* end() noexcept { return elem_ + size_; }
+    const T* end() const noexcept { return elem_ + size_; }
 
+    bool empty() const noexcept { return begin() == end(); }
     std::size_t size() const { return size_; }
     void reserve (std::size_t new_cap);
     std::size_t capacity() const { return space_; }

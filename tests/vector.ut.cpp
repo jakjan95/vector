@@ -155,3 +155,16 @@ TEST(Vector, EndShouldReturnIteratorToElementFollowingLastElementOfContainer)
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(vec[lastIndexOfVector], *lastElementOfVector);
 }
+
+TEST(Vector, EmptyShouldReturnTrueWhenContainerHasNoElements)
+{
+    my_vec::vector<int> vec;
+    EXPECT_TRUE(vec.empty());
+}
+
+TEST(Vector, EmptyShouldReturnFalseWhenContainerHasElements)
+{
+    constexpr std::size_t vectorSize = 2;
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_FALSE(vec.empty());
+}

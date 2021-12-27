@@ -45,5 +45,9 @@ int main()
         std::cout << el << '\n';
     }
 
+    if (!vec2.empty()) {
+        std::cout << "vec2 is not empty\n";
+    }
+
     return 0;
 }
