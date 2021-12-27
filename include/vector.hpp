@@ -7,6 +7,7 @@ template <typename T>
 class vector {
 public:
     constexpr vector() noexcept;
+    explicit vector(std::size_t count, const T& value = T());
     ~vector() noexcept { delete[] elem_; }
 
     std::size_t size() const { return size_; }
@@ -24,5 +25,16 @@ constexpr vector<T>::vector() noexcept
     , size_ { 0 }
     , space_ { 0 }
 {
+}
+
+template <typename T>
+vector<T>::vector(std::size_t count, const T& value)
+    : elem_ { new T[count] }
+    , size_ { count }
+    , space_ { count }
+{
+    for (size_t i = 0; i < count; ++i) {
+        elem_[i] = value;
+    }
 }
 }

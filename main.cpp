@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 
 #include "vector.hpp"
@@ -11,5 +12,12 @@ int main()
         std::cout << "Vector created by default constructor should have capacity equal to 0\n";
     }
 
+    std::size_t vec2Size = 5;
+    my_vec::vector<int> vec2(vec2Size);
+    std::cout << "my_vec::vector<int> vec2(5);\n";
+    if (vec2.size() == vec2Size && vec2.capacity() == vec2Size) {
+        std::cout << "Vector should have size equal to " << vec2Size << " \n";
+        std::cout << "Vector should have capacity equal to " << vec2Size << " \n";
+    }
     return 0;
 }
