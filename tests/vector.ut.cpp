@@ -131,3 +131,27 @@ TEST(Vector, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
         EXPECT_EQ(vec[i], newValue);
     }
 }
+
+TEST(Vector, BeginShouldReturnIteratorToFirstElementOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr int firstValue = 10;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec[0] = firstValue;
+
+    EXPECT_EQ(vec[0], *vec.begin());
+}
+
+TEST(Vector, EndShouldReturnIteratorToElementFollowingLastElementOfContainer)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr int lastValue = 10;
+
+    my_vec::vector<int> vec(vectorSize);
+    constexpr auto lastIndexOfVector = vectorSize - 1;
+    vec[lastIndexOfVector] = lastValue;
+
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(vec[lastIndexOfVector], *lastElementOfVector);
+}

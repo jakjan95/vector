@@ -14,6 +14,9 @@ public:
     constexpr T& operator[](std::size_t pos) { return elem_[pos]; }
     constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
 
+    T* begin() noexcept { return elem_; }
+    T* end() noexcept { return elem_ + size_; }
+
     std::size_t size() const { return size_; }
     void reserve (std::size_t new_cap);
     std::size_t capacity() const { return space_; }

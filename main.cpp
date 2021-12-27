@@ -40,5 +40,10 @@ int main()
         std::cout << "Vector should have capacity equal to " << vec2NewCapacity << " \n";
     }
 
+    std::cout << "After implementing begin and end range-based for loop can be use\n";
+    for (auto el : vec2) {
+        std::cout << el << '\n';
+    }
+
     return 0;
 }
