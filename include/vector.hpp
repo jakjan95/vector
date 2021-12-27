@@ -10,6 +10,9 @@ public:
     explicit vector(std::size_t count, const T& value = T());
     ~vector() noexcept { delete[] elem_; }
 
+    constexpr T& operator[](std::size_t pos) { return elem_[pos]; }
+    constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
+
     std::size_t size() const { return size_; }
     std::size_t capacity() const { return space_; }
 

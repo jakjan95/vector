@@ -19,5 +19,12 @@ int main()
         std::cout << "Vector should have size equal to " << vec2Size << " \n";
         std::cout << "Vector should have capacity equal to " << vec2Size << " \n";
     }
+
+    for (std::size_t i = 0; i < vec2Size; ++i) {
+        if (vec2[i] == 0) {
+            std::cout << "vec2[" << i << "] have default value\n";
+        }
+    }
+    
     return 0;
 }
