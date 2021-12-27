@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstring>
 
 namespace my_vec {
 template <typename T>
@@ -14,6 +15,7 @@ public:
     constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
 
     std::size_t size() const { return size_; }
+    void reserve (std::size_t new_cap);
     std::size_t capacity() const { return space_; }
 
 private:
@@ -38,6 +40,19 @@ vector<T>::vector(std::size_t count, const T& value)
 {
     for (size_t i = 0; i < count; ++i) {
         elem_[i] = value;
+    }
+}
+
+template <typename T>
+void vector<T>::reserve(std::size_t new_cap)
+{
+    if (new_cap > capacity()) {
+        T* tmp = new T[new_cap];
+        std::memcpy(tmp, elem_, size());
+        delete[] elem_;
+
+        elem_ = tmp;
+        space_ = new_cap;
     }
 }
 }

@@ -41,3 +41,25 @@ TEST(Vector, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithG
         EXPECT_EQ(vec[i], givenValue);
     }
 }
+
+TEST(Vector, ReserveShouldIncreaseVectorCapacity)
+{
+    constexpr std::size_t vectorSize = 2;
+    constexpr std::size_t newVectorCapacity = 6;
+    constexpr int defaultValue = 0;
+
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorSize);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+
+    vec.reserve(newVectorCapacity);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), newVectorCapacity);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], defaultValue);
+    }
+}

@@ -25,6 +25,13 @@ int main()
             std::cout << "vec2[" << i << "] have default value\n";
         }
     }
-    
+
+    std::size_t vec2NewCapacity = 10;
+    vec2.reserve(vec2NewCapacity);
+    if (vec2.size() == vec2Size && vec2.capacity() == vec2NewCapacity) {
+        std::cout << "Vector should have size equal to " << vec2Size << " \n";
+        std::cout << "Vector should have capacity equal to " << vec2NewCapacity << " \n";
+    }
+
     return 0;
 }
