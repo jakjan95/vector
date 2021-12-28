@@ -7,34 +7,43 @@ namespace my_vec {
 template <typename T>
 class vector {
 public:
+    using value_type = T;
+    using size_type = size_t;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using iterator = T*;
+    using const_iterator = const T*;
+
     constexpr vector() noexcept;
-    explicit vector(std::size_t count, const T& value = T());
+    explicit vector(size_type count, const T& value = T());
     constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
     constexpr vector& operator=(vector&& other) noexcept;
     ~vector() noexcept { delete[] elem_; }
 
-    constexpr T& operator[](std::size_t pos) { return elem_[pos]; }
-    constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
-    T* begin() noexcept { return elem_; }
-    const T* begin() const noexcept { return elem_; }
-    T* end() noexcept { return elem_ + size_; }
-    const T* end() const noexcept { return elem_ + size_; }
+    constexpr reference operator[](size_type pos) { return elem_[pos]; }
+    constexpr const_reference operator[](size_type pos) const { return elem_[pos]; }
+    iterator begin() noexcept { return elem_; }
+    const_iterator begin() const noexcept { return elem_; }
+    iterator end() noexcept { return elem_ + size_; }
+    const_iterator end() const noexcept { return elem_ + size_; }
 
     bool empty() const noexcept { return begin() == end(); }
-    std::size_t size() const { return size_; }
-    void reserve (std::size_t new_cap);
-    std::size_t capacity() const { return space_; }
+    size_type size() const { return size_; }
+    void reserve (size_type new_cap);
+    size_type capacity() const { return space_; }
 
     void push_back(const T& value);
     void push_back(T&& value);
-    void resize(std::size_t count, T value = T());
+    void resize(size_type count, T value = T());
 
 private:
     T* elem_;
-    std::size_t size_;
-    std::size_t space_;
+    size_type size_;
+    size_type space_;
 };
 
 template <typename T>
@@ -46,12 +55,12 @@ constexpr vector<T>::vector() noexcept
 }
 
 template <typename T>
-vector<T>::vector(std::size_t count, const T& value)
+vector<T>::vector(size_type count, const T& value)
     : elem_ { new T[count] }
     , size_ { count }
     , space_ { count }
 {
-    for (size_t i = 0; i < count; ++i) {
+    for (size_type i = 0; i < count; ++i) {
         elem_[i] = value;
     }
 }
@@ -62,7 +71,7 @@ constexpr vector<T>::vector(const vector<T>& other)
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
-    for (size_t i = 0; i < size(); ++i) {
+    for (size_type i = 0; i < size(); ++i) {
         elem_[i] = other.elem_[i];
     }
 }
@@ -73,7 +82,7 @@ constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
     reserve(other.space_);
     size_ = other.size_;
     space_ = other.space_;
-    for (size_t i = 0; i < size(); ++i) {
+    for (size_type i = 0; i < size(); ++i) {
         elem_[i] = other.elem_[i];
     }
     return *this;
@@ -103,11 +112,11 @@ constexpr vector<T>& vector<T>::operator=(vector&& other) noexcept
 }
 
 template <typename T>
-void vector<T>::reserve(std::size_t new_cap)
+void vector<T>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
         T* tmp = new T[new_cap];
-        for (size_t i = 0; i < size(); ++i) {
+        for (size_type i = 0; i < size(); ++i) {
             tmp[i] = elem_[i];
         }
         delete[] elem_;
@@ -136,11 +145,11 @@ void vector<T>::push_back(T&& value)
 }
 
 template <typename T>
-void vector<T>::resize(std::size_t count, T value)
+void vector<T>::resize(size_type count, T value)
 {
     reserve(count);
     if (count > size()) {
-        for (std::size_t i = size(); i < count; ++i) {
+        for (size_type i = size(); i < count; ++i) {
             elem_[i] = value;
         }
     }
