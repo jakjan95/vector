@@ -350,3 +350,18 @@ TEST(Vector, DataShouldReturnsPointerToUnderlyingArrayInsideVector)
         EXPECT_EQ(arrayFromVector[i], vec[i]);
     }
 }
+
+TEST(Vector, ClearShouldErasesAllElementsFromVector)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+    vec.clear();
+
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+}

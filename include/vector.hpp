@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -47,6 +48,7 @@ public:
     size_type capacity() const { return space_; }
     constexpr void shrink_to_fit();
 
+    constexpr void clear() noexcept;
     void push_back(const T& value);
     void push_back(T&& value);
     void resize(size_type count, T value = T());
@@ -160,6 +162,13 @@ constexpr void vector<T>::shrink_to_fit()
 {
     reserve(size_);
     space_ = size_;
+}
+
+template <typename T>
+constexpr void vector<T>::clear() noexcept
+{
+    std::destroy(elem_, elem_ + size_);
+    size_ = 0;
 }
 
 template <typename T>
