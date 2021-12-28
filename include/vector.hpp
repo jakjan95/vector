@@ -10,11 +10,12 @@ class vector {
 public:
     constexpr vector() noexcept;
     explicit vector(std::size_t count, const T& value = T());
+    constexpr vector(const vector& other);
+    constexpr vector& operator=(const vector& other);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr T& operator[](std::size_t pos) { return elem_[pos]; }
     constexpr const T& operator[](std::size_t pos) const { return elem_[pos]; }
-
     T* begin() noexcept { return elem_; }
     const T* begin() const noexcept { return elem_; }
     T* end() noexcept { return elem_ + size_; }
@@ -52,6 +53,25 @@ vector<T>::vector(std::size_t count, const T& value)
     for (size_t i = 0; i < count; ++i) {
         elem_[i] = value;
     }
+}
+
+template <typename T>
+constexpr vector<T>::vector(const vector<T>& other)
+    : elem_ { new T[other.space_] }
+    , size_ { other.size_ }
+    , space_ { other.space_ }
+{
+    std::memcpy(elem_, other.elem_, other.size_);
+}
+
+template <typename T>
+constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
+{
+    reserve(other.space_);
+    size_ = other.size_;
+    space_ = other.space_;
+    std::memcpy(elem_, other.elem_, other.size_);
+    return *this;
 }
 
 template <typename T>

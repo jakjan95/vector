@@ -218,3 +218,36 @@ TEST(Vector, PushBackShouldMoveElementAtEndOfContainer)
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(valToMove, *lastElementOfVector);
 }
+
+TEST(Vector, CopyConstructorShouldCreateNewVectorByCopyingGiven)
+{
+    constexpr std::size_t vectorSize = 3;
+
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    my_vec::vector<int> vec2(vec);
+
+    EXPECT_EQ(vec.size(), vec2.size());
+    EXPECT_EQ(vec.capacity(), vec2.capacity());
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], vec2[i]);
+    }
+}
+
+TEST(Vector, CopyAssignmentShouldCopyGivenVectorToVector)
+{
+    constexpr std::size_t vectorSize = 3;
+
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    my_vec::vector<int> vec2;
+    vec2 = vec;
+
+    EXPECT_EQ(vec.size(), vec2.size());
+    EXPECT_EQ(vec.capacity(), vec2.capacity());
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], vec2[i]);
+    }
+}
