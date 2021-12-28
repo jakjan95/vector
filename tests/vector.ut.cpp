@@ -301,3 +301,25 @@ TEST(Vector, ShrinkToFitShouldRemoveUnusedSpace)
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
 }
+
+TEST(Vector, FrontShouldReturnReferenceToFirstElementInContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    constexpr std::size_t firstElementIndex = 0;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec[firstElementIndex] = newValue;
+    EXPECT_EQ(vec[firstElementIndex], vec.front());
+    EXPECT_EQ(*vec.begin(), vec.front());
+}
+
+TEST(Vector, BackShouldReturnReferenceToLastElementInContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    constexpr std::size_t lastElementIndex = vectorSize - 1;
+
+    my_vec::vector<int> vec(vectorSize);
+    vec[lastElementIndex] = newValue;
+    EXPECT_EQ(vec[lastElementIndex], vec.back());
+    EXPECT_EQ(*std::prev(vec.end()), vec.back());
+}

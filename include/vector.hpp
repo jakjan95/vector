@@ -26,6 +26,11 @@ public:
 
     constexpr reference operator[](size_type pos) { return elem_[pos]; }
     constexpr const_reference operator[](size_type pos) const { return elem_[pos]; }
+    constexpr reference front() { return elem_[0]; }
+    constexpr const_reference front() const { return elem_[0]; }
+    constexpr reference back() { return elem_[size_ - 1]; }
+    constexpr const_reference back() const { return elem_[size_ - 1]; }
+
     iterator begin() noexcept { return elem_; }
     const_iterator begin() const noexcept { return elem_; }
     iterator end() noexcept { return elem_ + size_; }
