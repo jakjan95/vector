@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <cstring>
 #include <utility>
 
 namespace my_vec {
@@ -61,7 +60,9 @@ constexpr vector<T>::vector(const vector<T>& other)
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
-    std::memcpy(elem_, other.elem_, other.size_);
+    for (size_t i = 0; i < size(); ++i) {
+        elem_[i] = other.elem_[i];
+    }
 }
 
 template <typename T>
@@ -70,7 +71,9 @@ constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
     reserve(other.space_);
     size_ = other.size_;
     space_ = other.space_;
-    std::memcpy(elem_, other.elem_, other.size_);
+    for (size_t i = 0; i < size(); ++i) {
+        elem_[i] = other.elem_[i];
+    }
     return *this;
 }
 
@@ -79,7 +82,9 @@ void vector<T>::reserve(std::size_t new_cap)
 {
     if (new_cap > capacity()) {
         T* tmp = new T[new_cap];
-        std::memcpy(tmp, elem_, size());
+        for (size_t i = 0; i < size(); ++i) {
+            tmp[i] = elem_[i];
+        }
         delete[] elem_;
 
         elem_ = tmp;
