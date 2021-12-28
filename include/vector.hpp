@@ -33,6 +33,8 @@ public:
     constexpr const_reference front() const { return elem_[0]; }
     constexpr reference back() { return elem_[size_ - 1]; }
     constexpr const_reference back() const { return elem_[size_ - 1]; }
+    constexpr T* data() noexcept { return elem_; }
+    constexpr const T* data() const noexcept { return elem_; }
 
     iterator begin() noexcept { return elem_; }
     const_iterator begin() const noexcept { return elem_; }

@@ -340,3 +340,13 @@ TEST(Vector, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
     my_vec::vector<int> vec(vectorSize);
     EXPECT_THROW(vec.at(invalidPosition), std::out_of_range);
 }
+
+TEST(Vector, DataShouldReturnsPointerToUnderlyingArrayInsideVector)
+{
+    constexpr std::size_t vectorSize = 2;
+    my_vec::vector<int> vec(vectorSize, newValue);
+    auto arrayFromVector = vec.data();
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(arrayFromVector[i], vec[i]);
+    }
+}
