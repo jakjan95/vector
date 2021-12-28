@@ -251,3 +251,38 @@ TEST(Vector, CopyAssignmentShouldCopyGivenVectorToVector)
         EXPECT_EQ(vec[i], vec2[i]);
     }
 }
+
+TEST(Vector, MoveConstructorShouldConstructVectorByMovingContentOfGivenVector)
+{
+    constexpr std::size_t vectorSize = 3;
+
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    my_vec::vector<int> vec2(std::move(vec));
+
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec2.size(), vectorSize);
+    EXPECT_EQ(vec2.capacity(), vectorCapacity);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(newValue, vec2[i]);
+    }
+}
+
+TEST(Vector, MoveAssignmentShouldMoveDataFromGivenVector)
+{
+    constexpr std::size_t vectorSize = 3;
+
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    my_vec::vector<int> vec2;
+    vec2 = std::move(vec);
+
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec2.size(), vectorSize);
+    EXPECT_EQ(vec2.capacity(), vectorCapacity);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(newValue, vec2[i]);
+    }
+}

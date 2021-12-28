@@ -11,6 +11,8 @@ public:
     explicit vector(std::size_t count, const T& value = T());
     constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
+    constexpr vector(vector&& other) noexcept;
+    constexpr vector& operator=(vector&& other) noexcept;
     ~vector() noexcept { delete[] elem_; }
 
     constexpr T& operator[](std::size_t pos) { return elem_[pos]; }
@@ -74,6 +76,29 @@ constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
     for (size_t i = 0; i < size(); ++i) {
         elem_[i] = other.elem_[i];
     }
+    return *this;
+}
+
+template <typename T>
+constexpr vector<T>::vector(vector&& other) noexcept
+    : elem_ { other.elem_ }
+    , size_ { other.size_ }
+    , space_ { other.space_ }
+{
+    other.elem_ = nullptr;
+    other.size_ = 0;
+    other.space_ = 0;
+}
+
+template <typename T>
+constexpr vector<T>& vector<T>::operator=(vector&& other) noexcept
+{
+    elem_ = other.elem_;
+    size_ = other.size_;
+    space_ = other.space_;
+    other.elem_ = nullptr;
+    other.size_ = 0;
+    other.space_ = 0;
     return *this;
 }
 
