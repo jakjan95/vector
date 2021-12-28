@@ -35,6 +35,7 @@ public:
     size_type size() const { return size_; }
     void reserve (size_type new_cap);
     size_type capacity() const { return space_; }
+    constexpr void shrink_to_fit();
 
     void push_back(const T& value);
     void push_back(T&& value);
@@ -124,6 +125,13 @@ void vector<T>::reserve(size_type new_cap)
         elem_ = tmp;
         space_ = new_cap;
     }
+}
+
+template <typename T>
+constexpr void vector<T>::shrink_to_fit()
+{
+    reserve(size_);
+    space_ = size_;
 }
 
 template <typename T>

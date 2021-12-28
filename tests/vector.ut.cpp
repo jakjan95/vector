@@ -286,3 +286,18 @@ TEST(Vector, MoveAssignmentShouldMoveDataFromGivenVector)
         EXPECT_EQ(newValue, vec2[i]);
     }
 }
+
+TEST(Vector, ShrinkToFitShouldRemoveUnusedSpace)
+{
+    constexpr std::size_t vectorSize = 3;
+
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+
+    vec.shrink_to_fit();
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorSize);
+}
