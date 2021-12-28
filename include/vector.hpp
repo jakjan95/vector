@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <stdexcept>
 #include <utility>
 
 namespace my_vec {
@@ -24,6 +25,8 @@ public:
     constexpr vector& operator=(vector&& other) noexcept;
     ~vector() noexcept { delete[] elem_; }
 
+    constexpr reference at(size_type pos);
+    constexpr const_reference at(size_type pos) const;
     constexpr reference operator[](size_type pos) { return elem_[pos]; }
     constexpr const_reference operator[](size_type pos) const { return elem_[pos]; }
     constexpr reference front() { return elem_[0]; }
@@ -115,6 +118,24 @@ constexpr vector<T>& vector<T>::operator=(vector&& other) noexcept
     other.size_ = 0;
     other.space_ = 0;
     return *this;
+}
+
+template <typename T>
+constexpr typename vector<T>::reference vector<T>::at(size_type pos)
+{
+    if (pos >= size()) {
+        throw std::out_of_range { "Position not within range of vector" };
+    }
+    return elem_[pos];
+}
+
+template <typename T>
+constexpr typename vector<T>::const_reference vector<T>::at(size_type pos) const
+{
+    if (pos >= size()) {
+        throw std::out_of_range { "Position not within range of vector" };
+    }
+    return elem_[pos];
 }
 
 template <typename T>

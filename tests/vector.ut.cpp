@@ -323,3 +323,20 @@ TEST(Vector, BackShouldReturnReferenceToLastElementInContainer)
     EXPECT_EQ(vec[lastElementIndex], vec.back());
     EXPECT_EQ(*std::prev(vec.end()), vec.back());
 }
+
+TEST(Vector, AtShouldReturnReferenceToElementAtSpecificPositon)
+{
+    constexpr std::size_t vectorSize = 1;
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_EQ(vec.at(0), defaultValue);
+    vec.at(0) = newValue;
+    EXPECT_EQ(vec.at(0), newValue);
+}
+
+TEST(Vector, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
+{
+    constexpr std::size_t vectorSize = 1;
+    constexpr std::size_t invalidPosition = 10;
+    my_vec::vector<int> vec(vectorSize);
+    EXPECT_THROW(vec.at(invalidPosition), std::out_of_range);
+}
