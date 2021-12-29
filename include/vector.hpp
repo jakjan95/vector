@@ -52,6 +52,8 @@ public:
     constexpr iterator insert(iterator pos, const T& value);
     void push_back(const T& value);
     void push_back(T&& value);
+    template <typename... Args>
+    constexpr reference emplace_back(Args&&... args);
     void resize(size_type count, T value = T());
 
 private:
@@ -206,6 +208,16 @@ void vector<T>::push_back(T&& value)
         reserve(2 * capacity());
     }
     elem_[size_++] = std::move(value);
+}
+
+template <typename T>
+template <typename... Args>
+constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
+{
+    if (size() >= capacity()) {
+        reserve(2 * capacity());
+    }
+    return elem_[size_++] = T(std::forward<Args>(args)...);
 }
 
 template <typename T>

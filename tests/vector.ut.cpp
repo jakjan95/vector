@@ -413,3 +413,37 @@ TEST(Vector, InsertShouldInsertGivenValueAndIncreaseCapacity)
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
     EXPECT_EQ(vec.capacity(), capacityOfVectorAfterInsertion);
 }
+
+TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<std::string> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+    EXPECT_EQ(vec.size(), vectorSize);
+
+    const std::string stringValue = "string";
+    vec.emplace_back(stringValue);
+    constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterEmplaceBack);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(stringValue, *lastElementOfVector);
+}
+
+TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeAndOfContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<std::string> vec(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorSize);
+
+    const auto capacityAfterEmplaceBack = 2 * vec.capacity();
+    const std::string stringValue = "string";
+    vec.emplace_back(stringValue);
+    constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterEmplaceBack);
+    EXPECT_EQ(vec.capacity(), capacityAfterEmplaceBack);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(stringValue, *lastElementOfVector);
+}
