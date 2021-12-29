@@ -503,3 +503,32 @@ TEST(Vector, PopBackShouldRemoveLastElementOfContainerAndDecreaseSize)
 
     EXPECT_EQ(vec.size(), vectorSizeAfterPopBack);
 }
+
+TEST(Vector, EraseShouldErasesFirstElementsFromTheContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize);
+    vec.front() = newValue;
+
+    auto it = vec.erase(vec.begin());
+    const auto vectorSizeAfterErase = vectorSize - 1;
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterErase);
+    EXPECT_NE(vec.front(), newValue);
+    EXPECT_EQ(it, vec.begin());
+}
+
+TEST(Vector, EraseShouldErasesLastElementsFromTheContainer)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize);
+    vec.back() = newValue;
+
+    auto lastElement = vec.end() - 1;
+    auto it = vec.erase(lastElement);
+    const auto vectorSizeAfterErase = vectorSize - 1;
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterErase);
+    EXPECT_NE(vec.back(), newValue);
+    EXPECT_EQ(it, vec.end());
+}

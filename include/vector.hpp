@@ -50,6 +50,7 @@ public:
 
     constexpr void clear() noexcept;
     constexpr iterator insert(iterator pos, const T& value);
+    constexpr iterator erase(const_iterator pos);
     void push_back(const T& value);
     void push_back(T&& value);
     template <typename... Args>
@@ -191,6 +192,19 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
 
     *pos = value;
     return pos;
+}
+
+template <typename T>
+constexpr typename vector<T>::iterator vector<T>::erase(const_iterator pos)
+{
+    (*pos).~T();
+    size_--;
+    const auto posDistance = static_cast<size_type>(pos - elem_);
+    for (auto itCurrent = elem_ + posDistance, itNext = itCurrent + 1; itCurrent != elem_ + size_; ++itCurrent, ++itNext) {
+        *itCurrent = *itNext;
+    }
+
+    return elem_ + posDistance;
 }
 
 template <typename T>
