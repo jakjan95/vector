@@ -447,3 +447,15 @@ TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSize
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
+
+TEST(Vector, PopBackShouldRemoveLastElementOfContainerAndDecreaseSize)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize, newValue);
+    EXPECT_EQ(vec.size(), vectorSize);
+
+    vec.pop_back();
+    auto vectorSizeAfterPopBack = vectorSize - 1;
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterPopBack);
+}

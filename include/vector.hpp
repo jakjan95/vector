@@ -54,6 +54,7 @@ public:
     void push_back(T&& value);
     template <typename... Args>
     constexpr reference emplace_back(Args&&... args);
+    constexpr void pop_back();
     void resize(size_type count, T value = T());
 
 private:
@@ -218,6 +219,12 @@ constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
         reserve(2 * capacity());
     }
     return elem_[size_++] = T(std::forward<Args>(args)...);
+}
+
+template <typename T>
+constexpr void vector<T>::pop_back()
+{
+    elem_[--size_].~T();
 }
 
 template <typename T>
