@@ -6,6 +6,7 @@
 constexpr int defaultValue = 0;
 constexpr int newValue = 5;
 constexpr std::size_t vectorCapacity = 6;
+constexpr int valueToInsert = 42;
 
 TEST(Vector, DefaultConstructorShouldCreateEmptyVector)
 {
@@ -364,4 +365,51 @@ TEST(Vector, ClearShouldErasesAllElementsFromVector)
     EXPECT_EQ(vec.size(), 0);
     EXPECT_TRUE(vec.empty());
     EXPECT_EQ(vec.capacity(), vectorCapacity);
+}
+
+TEST(Vector, InsertShouldInsertGivenValueBeforeBeginAndEndPosition)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+
+    vec.insert(vec.begin(), valueToInsert);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*vec.begin(), valueToInsert);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+
+    vec.insert(vec.end(), valueToInsert);
+    vectorSizeAfterInsertion++;
+
+    EXPECT_EQ(*std::prev(vec.end()), valueToInsert);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+}
+
+TEST(Vector, InsertShouldInsertGivenValueBeforeMiddlePosition)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize, newValue);
+    vec.reserve(vectorCapacity);
+    auto middleIterator = vec.begin() + vectorSize / 2;
+
+    middleIterator = vec.insert(middleIterator, valueToInsert);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*middleIterator, valueToInsert);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+}
+
+TEST(Vector, InsertShouldInsertGivenValueAndIncreaseCapacity)
+{
+    constexpr std::size_t vectorSize = 3;
+    my_vec::vector<int> vec(vectorSize, newValue);
+
+    auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
+    vec.insert(vec.end(), valueToInsert);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*std::prev(vec.end()), valueToInsert);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), capacityOfVectorAfterInsertion);
 }

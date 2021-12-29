@@ -49,6 +49,7 @@ public:
     constexpr void shrink_to_fit();
 
     constexpr void clear() noexcept;
+    constexpr iterator insert(iterator pos, const T& value);
     void push_back(const T& value);
     void push_back(T&& value);
     void resize(size_type count, T value = T());
@@ -169,6 +170,24 @@ constexpr void vector<T>::clear() noexcept
 {
     std::destroy(elem_, elem_ + size_);
     size_ = 0;
+}
+
+template <typename T>
+constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& value)
+{
+    if (size() == capacity()) {
+        auto posDistance = static_cast<size_type>(pos - elem_);
+        reserve(2 * capacity());
+        pos = elem_ + posDistance;
+    }
+
+    size_++;
+    for (auto itCurrent = pos + 1, itPrevious = pos; itCurrent != elem_ + size_; ++itCurrent, ++itPrevious) {
+        *itCurrent = *itPrevious;
+    }
+
+    *pos = value;
+    return pos;
 }
 
 template <typename T>
