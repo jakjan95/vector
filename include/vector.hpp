@@ -180,7 +180,7 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
-        reserve(2 * capacity());
+        reserve(capacity() == 0 ? 8 : 2 * capacity());
         pos = elem_ + posDistance;
     }
 
@@ -196,7 +196,10 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
 template <typename T>
 void vector<T>::push_back(const T& value)
 {
-    if (size() >= capacity()) {
+    if(capacity() == 0){
+        reserve(8);
+    }
+    else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     elem_[size_++] = value;
@@ -205,7 +208,10 @@ void vector<T>::push_back(const T& value)
 template <typename T>
 void vector<T>::push_back(T&& value)
 {
-    if (size() >= capacity()) {
+    if(capacity() == 0){
+        reserve(8);
+    }
+    else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     elem_[size_++] = std::move(value);
@@ -215,7 +221,10 @@ template <typename T>
 template <typename... Args>
 constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
 {
-    if (size() >= capacity()) {
+    if(capacity() == 0){
+        reserve(8);
+    }
+    else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     return elem_[size_++] = T(std::forward<Args>(args)...);
