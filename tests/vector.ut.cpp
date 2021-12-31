@@ -8,6 +8,7 @@ constexpr std::size_t defaultContainerCapacity = 8;
 constexpr int newValue = 5;
 constexpr std::size_t vectorCapacity = 6;
 constexpr int valueToInsert = 42;
+const std::string stringValue = "string";
 
 TEST(Vector, DefaultConstructorShouldCreateEmptyVector)
 {
@@ -450,7 +451,6 @@ TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSize
     vec.reserve(vectorCapacity);
     EXPECT_EQ(vec.size(), vectorSize);
 
-    const std::string stringValue = "string";
     vec.emplace_back(stringValue);
     constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
 
@@ -467,7 +467,6 @@ TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSize
     EXPECT_EQ(vec.capacity(), vectorSize);
 
     const auto capacityAfterEmplaceBack = 2 * vec.capacity();
-    const std::string stringValue = "string";
     vec.emplace_back(stringValue);
     constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
 
@@ -481,7 +480,6 @@ TEST(Vector, EmplaceBackOnEmptyContainerShouldReserveSpaceAndAddElementAtEndOfCo
 {
     my_vec::vector<std::string> vec;
     EXPECT_TRUE(vec.empty());
-    const std::string stringValue = "string";
     vec.emplace_back(stringValue);
 
     constexpr std::size_t incrementedVectorSize = 1;
@@ -536,7 +534,6 @@ TEST(Vector, EraseShouldErasesLastElementsFromTheContainer)
 TEST(Vector, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
 {
     constexpr std::size_t vectorSize = 3;
-    const std::string stringValue = "string";
     my_vec::vector<std::string> vec(vectorSize);
     vec.reserve(vectorCapacity);
 
@@ -556,7 +553,6 @@ TEST(Vector, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
 TEST(Vector, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
 {
     constexpr std::size_t vectorSize = 3;
-    const std::string stringValue = "string";
     my_vec::vector<std::string> vec(vectorSize);
     vec.reserve(vectorCapacity);
     auto middleIterator = vec.begin() + vectorSize / 2;
@@ -571,7 +567,6 @@ TEST(Vector, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
 TEST(Vector, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
 {
     constexpr std::size_t vectorSize = 3;
-    const std::string stringValue = "string";
     my_vec::vector<std::string> vec(vectorSize);
 
     auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
@@ -586,7 +581,6 @@ TEST(Vector, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
 TEST(Vector, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
 {
     my_vec::vector<std::string> vec;
-    const std::string stringValue = "string";
     EXPECT_TRUE(vec.empty());
 
     vec.insert(vec.begin(), stringValue);
