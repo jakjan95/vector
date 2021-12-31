@@ -50,6 +50,8 @@ public:
 
     constexpr void clear() noexcept;
     constexpr iterator insert(iterator pos, const T& value);
+    template <typename... Args>
+    constexpr iterator emplace(const_iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
     void push_back(const T& value);
     void push_back(T&& value);
@@ -191,6 +193,25 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
     }
 
     *pos = value;
+    return pos;
+}
+
+template <typename T>
+template <typename... Args>
+constexpr typename vector<T>::iterator vector<T>::emplace(const_iterator pos, Args&&... args)
+{
+    if (size() == capacity()) {
+        auto posDistance = static_cast<size_type>(pos - elem_);
+        reserve(capacity() == 0 ? 8 : 2 * capacity());
+        pos = elem_ + posDistance;
+    }
+
+    size_++;
+    for (auto itCurrent = pos + 1, itPrevious = pos; itCurrent != elem_ + size_; ++itCurrent, ++itPrevious) {
+        *itCurrent = *itPrevious;
+    }
+
+    *pos = T(std::forward<Args>(args)...);
     return pos;
 }
 

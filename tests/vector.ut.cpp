@@ -532,3 +532,68 @@ TEST(Vector, EraseShouldErasesLastElementsFromTheContainer)
     EXPECT_NE(vec.back(), newValue);
     EXPECT_EQ(it, vec.end());
 }
+
+TEST(Vector, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
+{
+    constexpr std::size_t vectorSize = 3;
+    const std::string stringValue = "string";
+    my_vec::vector<std::string> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+
+    vec.insert(vec.begin(), stringValue);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*vec.begin(), stringValue);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+
+    vec.insert(vec.end(), stringValue);
+    vectorSizeAfterInsertion++;
+
+    EXPECT_EQ(*std::prev(vec.end()), stringValue);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+}
+
+TEST(Vector, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
+{
+    constexpr std::size_t vectorSize = 3;
+    const std::string stringValue = "string";
+    my_vec::vector<std::string> vec(vectorSize);
+    vec.reserve(vectorCapacity);
+    auto middleIterator = vec.begin() + vectorSize / 2;
+
+    middleIterator = vec.insert(middleIterator, stringValue);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*middleIterator, stringValue);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+}
+
+TEST(Vector, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
+{
+    constexpr std::size_t vectorSize = 3;
+    const std::string stringValue = "string";
+    my_vec::vector<std::string> vec(vectorSize);
+
+    auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
+    vec.insert(vec.end(), stringValue);
+    auto vectorSizeAfterInsertion = vectorSize + 1;
+
+    EXPECT_EQ(*std::prev(vec.end()), stringValue);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), capacityOfVectorAfterInsertion);
+}
+
+TEST(Vector, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
+{
+    my_vec::vector<std::string> vec;
+    const std::string stringValue = "string";
+    EXPECT_TRUE(vec.empty());
+
+    vec.insert(vec.begin(), stringValue);
+    constexpr std::size_t incrementedVectorSize = 1;
+
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    EXPECT_EQ(vec.capacity(), defaultContainerCapacity);
+    auto lastElementOfVector = std::prev(vec.end());
+    EXPECT_EQ(stringValue, *lastElementOfVector);
+}
