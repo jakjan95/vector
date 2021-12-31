@@ -59,6 +59,7 @@ public:
     constexpr reference emplace_back(Args&&... args);
     constexpr void pop_back();
     void resize(size_type count, T value = T());
+    constexpr void swap(vector& other) noexcept;
 
 private:
     T* elem_;
@@ -281,5 +282,21 @@ void vector<T>::resize(size_type count, T value)
         }
     }
     size_ = count;
+}
+
+template <typename T>
+constexpr void vector<T>::swap(vector& other) noexcept
+{
+    T* tmpElem = other.elem_;
+    size_type tmpSize = other.size_;
+    size_type tmpSpace = other.space_;
+
+    other.elem_ = elem_;
+    other.size_ = size_;
+    other.space_ = space_;
+
+    elem_ = tmpElem;
+    size_ = tmpSize;
+    space_ = tmpSpace;
 }
 }

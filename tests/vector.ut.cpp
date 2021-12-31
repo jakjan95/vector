@@ -597,3 +597,34 @@ TEST(Vector, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
+
+TEST(Vector, SwapShouldExchangeContentBetweenContainers)
+{
+    constexpr int valueInFirstVector = 99;
+    constexpr std::size_t firstVectorSize = 3;
+    constexpr std::size_t firstVectorCapacity = 5;
+    my_vec::vector<int> firstVector(firstVectorSize, valueInFirstVector);
+    firstVector.reserve(firstVectorCapacity);
+
+    constexpr int valueInSecondVector = 66;
+    constexpr std::size_t secondVectorSize = 6;
+    constexpr std::size_t secondVectorCapacity = 8;
+    my_vec::vector<int> secondVector(secondVectorSize, valueInSecondVector);
+    secondVector.reserve(secondVectorCapacity);
+
+    firstVector.swap(secondVector);
+
+    EXPECT_EQ(firstVector.size(), secondVectorSize);
+    EXPECT_EQ(firstVector.capacity(), secondVectorCapacity);
+
+    EXPECT_EQ(secondVector.size(), firstVectorSize);
+    EXPECT_EQ(secondVector.capacity(), firstVectorCapacity);
+
+    for (std::size_t i = 0; i < firstVector.size(); ++i) {
+        EXPECT_EQ(firstVector[i], valueInSecondVector);
+    }
+
+    for (std::size_t i = 0; i < secondVector.size(); ++i) {
+        EXPECT_EQ(secondVector[i], valueInFirstVector);
+    }
+}
