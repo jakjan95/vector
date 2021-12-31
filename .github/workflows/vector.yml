@@ -1,0 +1,39 @@
+name: vector
+
+on: [push, pull_request]
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@master
+    - name: Create build directory
+      run: mkdir build
+    - name: Compile
+      working-directory: build
+      run: |
+        cmake ..
+        make
+    - name: Run UTs
+      working-directory: build
+      run: |
+        ctest -V
+  Memory:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@master
+    - name: Create build directory
+      run: mkdir build
+    - name: Compile code and install valgrind
+      working-directory: build
+      run: |
+        sudo apt install valgrind
+        cmake ..
+        make
+    - name: Run Valgrind
+      working-directory: build
+      run: |
+        valgrind --leak-check=full ./vector-ut
+        valgrind --leak-check=full ./vector
