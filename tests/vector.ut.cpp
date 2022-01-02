@@ -304,6 +304,20 @@ TEST(Vector, MoveAssignmentShouldMoveDataFromGivenVector)
     }
 }
 
+TEST(Vector, InitializerListConstructorShouldConstructVectorByUsingContentOfGivenInitializerList)
+{
+    auto initializerLst = { 1, 2, 3 };
+    my_vec::vector<int> vec(initializerLst);
+
+    EXPECT_EQ(vec.size(), initializerLst.size());
+    EXPECT_EQ(vec.capacity(), initializerLst.size());
+
+    std::size_t index = 0;
+    for (const auto el : initializerLst) {
+        EXPECT_EQ(vec[index++], el);
+    }
+}
+
 TEST(Vector, ShrinkToFitShouldRemoveUnusedSpace)
 {
     constexpr std::size_t vectorSize = 3;

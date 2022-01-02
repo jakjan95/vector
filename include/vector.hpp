@@ -24,6 +24,7 @@ public:
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
     constexpr vector& operator=(vector&& other) noexcept;
+    constexpr vector(std::initializer_list<T> init);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference at(size_type pos);
@@ -130,6 +131,18 @@ constexpr vector<T>& vector<T>::operator=(vector&& other) noexcept
     other.size_ = 0;
     other.space_ = 0;
     return *this;
+}
+
+template <typename T>
+constexpr vector<T>::vector(std::initializer_list<T> init)
+    : elem_ { new T[init.size()] }
+    , size_ { init.size() }
+    , space_ { init.size() }
+{
+    size_type arrIndex = 0;
+    for (const auto& el : init) {
+        elem_[arrIndex++] = el;
+    }
 }
 
 template <typename T>
