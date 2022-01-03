@@ -555,13 +555,13 @@ TEST_F(VectorTest, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
     auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
 
     auto vectorSizeAfterInsertion = vec.size() + 1;
-    vec.insert(vec.begin(), stringValue);
+    vec.emplace(vec.begin(), stringValue);
 
     EXPECT_EQ(*vec.begin(), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 
     vectorSizeAfterInsertion++;
-    vec.insert(vec.end(), stringValue);
+    vec.emplace(vec.end(), stringValue);
 
     EXPECT_EQ(*std::prev(vec.end()), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
@@ -573,7 +573,7 @@ TEST_F(VectorTest, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
     auto middleIterator = vec.begin() + vectorSize / 2;
 
     const auto vectorSizeAfterInsertion = vec.size() + 1;
-    middleIterator = vec.insert(middleIterator, stringValue);
+    middleIterator = vec.emplace(middleIterator, stringValue);
 
     EXPECT_EQ(*middleIterator, stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
@@ -585,7 +585,7 @@ TEST_F(VectorTest, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
 
     const auto vectorSizeAfterInsertion = vec.size() + 1;
     const auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
-    vec.insert(vec.end(), stringValue);
+    vec.emplace(vec.end(), stringValue);
 
     EXPECT_EQ(*std::prev(vec.end()), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
@@ -598,7 +598,7 @@ TEST_F(VectorTest, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
     EXPECT_TRUE(vec.empty());
 
     const auto incrementedVectorSize = vec.size() + 1;
-    vec.insert(vec.begin(), stringValue);
+    vec.emplace(vec.begin(), stringValue);
 
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), defaultContainerCapacity);

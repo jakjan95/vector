@@ -53,7 +53,7 @@ public:
     constexpr void clear() noexcept;
     constexpr iterator insert(iterator pos, const T& value);
     template <typename... Args>
-    constexpr iterator emplace(const_iterator pos, Args&&... args);
+    constexpr iterator emplace(iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
     void push_back(const T& value);
     void push_back(T&& value);
@@ -229,7 +229,7 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
 
 template <typename T>
 template <typename... Args>
-constexpr typename vector<T>::iterator vector<T>::emplace(const_iterator pos, Args&&... args)
+constexpr typename vector<T>::iterator vector<T>::emplace(iterator pos, Args&&... args)
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
