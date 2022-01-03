@@ -168,6 +168,16 @@ TEST_F(VectorTest, BeginShouldReturnIteratorToFirstElementOfContainer)
     EXPECT_EQ(vec[0], *vec.begin());
 }
 
+TEST_F(VectorTest, ReverseBeginShouldReturnIteratorToFirstElementOfReversedVector)
+{
+    constexpr int lastValue = 10;
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
+    const auto lastElementIndex = vec.size() - 1;
+    vec[lastElementIndex] = lastValue;
+
+    EXPECT_EQ(vec[lastElementIndex], *vec.rbegin());
+}
+
 TEST_F(VectorTest, EndShouldReturnIteratorToElementFollowingLastElementOfContainer)
 {
     constexpr int lastValue = 10;
@@ -178,6 +188,17 @@ TEST_F(VectorTest, EndShouldReturnIteratorToElementFollowingLastElementOfContain
     auto lastElementOfVector = std::prev(vec.end());
 
     EXPECT_EQ(vec[lastIndexOfVector], *lastElementOfVector);
+}
+
+TEST_F(VectorTest, ReverseEndShouldReturnIteratorToElementFollowingLastElementOfReversedContainer)
+{
+    constexpr int firstValue = 10;
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
+    vec[0] = firstValue;
+
+    auto firstElementOfVector = std::prev(vec.rend());
+
+    EXPECT_EQ(vec[0], *firstElementOfVector);
 }
 
 TEST_F(VectorTest, EmptyShouldReturnTrueWhenContainerHasNoElements)

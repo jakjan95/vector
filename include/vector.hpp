@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -17,6 +18,9 @@ public:
     using const_pointer = const T*;
     using iterator = T*;
     using const_iterator = const T*;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using difference_type = std::ptrdiff_t;
 
     constexpr vector() noexcept;
     explicit vector(size_type count, const T& value = T());
@@ -43,6 +47,11 @@ public:
     const_iterator begin() const noexcept { return elem_; }
     iterator end() noexcept { return elem_ + size_; }
     const_iterator end() const noexcept { return elem_ + size_; }
+
+    reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
+    reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
 
     bool empty() const noexcept { return begin() == end(); }
     size_type size() const { return size_; }
