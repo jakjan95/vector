@@ -10,7 +10,7 @@ template <typename T>
 class vector {
 public:
     using value_type = T;
-    using size_type = size_t;
+    using size_type = std::size_t;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = T*;
