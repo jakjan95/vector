@@ -67,6 +67,7 @@ private:
     T* elem_;
     size_type size_;
     size_type space_;
+    const size_type defaultContainerCapacity_ = 8;
 };
 
 template <typename T>
@@ -214,7 +215,7 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
-        reserve(capacity() == 0 ? 8 : 2 * capacity());
+        reserve(capacity() == 0 ? defaultContainerCapacity_ : 2 * capacity());
         pos = elem_ + posDistance;
     }
 
@@ -233,7 +234,7 @@ constexpr typename vector<T>::iterator vector<T>::emplace(iterator pos, Args&&..
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
-        reserve(capacity() == 0 ? 8 : 2 * capacity());
+        reserve(capacity() == 0 ? defaultContainerCapacity_ : 2 * capacity());
         pos = elem_ + posDistance;
     }
 
@@ -263,7 +264,7 @@ template <typename T>
 void vector<T>::push_back(const T& value)
 {
     if(capacity() == 0){
-        reserve(8);
+        reserve(defaultContainerCapacity_);
     }
     else if (size() >= capacity()) {
         reserve(2 * capacity());
@@ -275,7 +276,7 @@ template <typename T>
 void vector<T>::push_back(T&& value)
 {
     if(capacity() == 0){
-        reserve(8);
+        reserve(defaultContainerCapacity_);
     }
     else if (size() >= capacity()) {
         reserve(2 * capacity());
@@ -288,7 +289,7 @@ template <typename... Args>
 constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
 {
     if(capacity() == 0){
-        reserve(8);
+        reserve(defaultContainerCapacity_);
     }
     else if (size() >= capacity()) {
         reserve(2 * capacity());
