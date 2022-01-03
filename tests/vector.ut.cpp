@@ -1,8 +1,10 @@
 #include "gtest/gtest.h"
 #include <cstddef>
+#include <string>
 
 #include "vector.hpp"
 
+constexpr std::size_t vectorSize = 3;
 constexpr int defaultValue = 0;
 constexpr std::size_t defaultContainerCapacity = 8;
 constexpr int newValue = 5;
@@ -10,36 +12,61 @@ constexpr std::size_t vectorCapacity = 6;
 constexpr int valueToInsert = 42;
 const std::string stringValue = "string";
 
-TEST(Vector, DefaultConstructorShouldCreateEmptyVector)
+class VectorTest : public ::testing::Test {
+protected:
+    template <typename T>
+    my_vec::vector<T> makeEmptyVector()
+    {
+        return my_vec::vector<T> {};
+    }
+
+    template <typename T>
+    my_vec::vector<T> makeVectorWithSameSizeAndCapacity(std::size_t size, T value = {})
+    {
+        return my_vec::vector<T>(size, value);
+    }
+
+    template <typename T>
+    my_vec::vector<T> makeVectorWithSizeAndCapacity(std::size_t size, std::size_t capacity, T value = {})
+    {
+        auto vec = my_vec::vector<T>(size, value);
+        vec.reserve(capacity);
+        return vec;
+    }
+};
+
+TEST(VectorConstructor, DefaultConstructorShouldCreateEmptyVector)
 {
     my_vec::vector<int> vec;
+
     EXPECT_EQ(vec.size(), 0);
     EXPECT_EQ(vec.capacity(), 0);
 }
 
-TEST(Vector, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithDefaultValue)
+TEST(VectorConstructor, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithDefaultValue)
 {
-    constexpr std::size_t vectorSize = 5;
     my_vec::vector<int> vec(vectorSize);
+
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
 }
 
-TEST(Vector, SquareBracketOperatorShouldReturnReferenceToElementAtSpecificPositon)
+TEST_F(VectorTest, SquareBracketOperatorShouldReturnReferenceToElementAtSpecificPositon)
 {
-    constexpr std::size_t vectorSize = 1;
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_EQ(vec[0], defaultValue);
+
     vec[0] = newValue;
+
     EXPECT_EQ(vec[0], newValue);
 }
 
-TEST(Vector, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithGivenValue)
+TEST(VectorConstructor, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithGivenValue)
 {
-    constexpr std::size_t vectorSize = 2;
     constexpr int givenValue = 1;
 
     my_vec::vector<int> vec(vectorSize, givenValue);
+
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
     for (std::size_t i = 0; i < vectorSize; ++i) {
@@ -47,12 +74,10 @@ TEST(Vector, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithG
     }
 }
 
-TEST(Vector, ReserveShouldIncreaseVectorCapacity)
+TEST_F(VectorTest, ReserveShouldIncreaseVectorCapacity)
 {
-    constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorCapacity = 6;
-
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
     for (std::size_t i = 0; i < vectorSize; ++i) {
@@ -68,13 +93,12 @@ TEST(Vector, ReserveShouldIncreaseVectorCapacity)
     }
 }
 
-TEST(Vector, ResizeShouldResizesCointainerToContainCountElements)
+TEST_F(VectorTest, ResizeShouldResizesCointainerToContainCountElements)
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorSize = 4;
-    
-    my_vec::vector<int> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity);
 
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorCapacity);
@@ -91,12 +115,12 @@ TEST(Vector, ResizeShouldResizesCointainerToContainCountElements)
     }
 }
 
-TEST(Vector, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityOfContainer)
+TEST_F(VectorTest, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityOfContainer)
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorSize = 4;
 
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
     for (std::size_t i = 0; i < vectorSize; ++i) {
@@ -112,13 +136,12 @@ TEST(Vector, ResizeOfContainerWithValueHigherThanCapacityShouldIncreaseCapacityO
     }
 }
 
-TEST(Vector, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
+TEST_F(VectorTest, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
 {
     constexpr std::size_t vectorSize = 2;
     constexpr std::size_t newVectorSize = 4;
 
-    my_vec::vector<int> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorCapacity);
 
@@ -135,113 +158,99 @@ TEST(Vector, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
     }
 }
 
-TEST(Vector, BeginShouldReturnIteratorToFirstElementOfContainer)
+TEST_F(VectorTest, BeginShouldReturnIteratorToFirstElementOfContainer)
 {
-    constexpr std::size_t vectorSize = 2;
     constexpr int firstValue = 10;
 
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     vec[0] = firstValue;
 
     EXPECT_EQ(vec[0], *vec.begin());
 }
 
-TEST(Vector, EndShouldReturnIteratorToElementFollowingLastElementOfContainer)
+TEST_F(VectorTest, EndShouldReturnIteratorToElementFollowingLastElementOfContainer)
 {
-    constexpr std::size_t vectorSize = 2;
     constexpr int lastValue = 10;
-
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     constexpr auto lastIndexOfVector = vectorSize - 1;
     vec[lastIndexOfVector] = lastValue;
 
     auto lastElementOfVector = std::prev(vec.end());
+
     EXPECT_EQ(vec[lastIndexOfVector], *lastElementOfVector);
 }
 
-TEST(Vector, EmptyShouldReturnTrueWhenContainerHasNoElements)
+TEST_F(VectorTest, EmptyShouldReturnTrueWhenContainerHasNoElements)
 {
-    my_vec::vector<int> vec;
+    auto vec = makeEmptyVector<int>();
     EXPECT_TRUE(vec.empty());
 }
 
-TEST(Vector, EmptyShouldReturnFalseWhenContainerHasElements)
+TEST_F(VectorTest, EmptyShouldReturnFalseWhenContainerHasElements)
 {
-    constexpr std::size_t vectorSize = 2;
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_FALSE(vec.empty());
 }
 
-TEST(Vector, PushBackShouldAddElementAtEndOfContainerAndIncrementSizeOfContainer)
+TEST_F(VectorTest, PushBackShouldAddElementAtEndOfContainerAndIncrementSizeOfContainer)
 {
-    constexpr std::size_t vectorSize = 2;
-
-    my_vec::vector<int> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity);
     EXPECT_EQ(vec.size(), vectorSize);
 
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.push_back(newValue);
-    
-    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
+
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(newValue, *lastElementOfVector);
 }
 
-TEST(Vector, PushBackOnEmptyContainerShouldReserveSpaceAndAddElementAtEndOfContainer)
+TEST_F(VectorTest, PushBackOnEmptyContainerShouldReserveSpaceAndAddElementAtEndOfContainer)
 {
-    my_vec::vector<int> vec;
+    auto vec = makeEmptyVector<int>();
     EXPECT_TRUE(vec.empty());
+
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.push_back(newValue);
 
-    constexpr std::size_t incrementedVectorSize = 1;
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), defaultContainerCapacity);
-
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(newValue, *lastElementOfVector);
 }
 
-TEST(Vector, PushBackShouldAddElementAtEndOfContainerWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacityOfContainer)
+TEST_F(VectorTest, PushBackShouldAddElementAtEndOfContainerWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacityOfContainer)
 {
-    constexpr std::size_t vectorSize = 2;
-
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
 
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.push_back(newValue);
 
-    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), 2 * vectorSize);
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(newValue, *lastElementOfVector);
 }
 
-TEST(Vector, PushBackShouldMoveElementAtEndOfContainer)
+TEST_F(VectorTest, PushBackShouldMoveElementAtEndOfContainer)
 {
-    constexpr std::size_t vectorSize = 2;
-
-    my_vec::vector<int> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    int valToMove = 2;
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity);
     EXPECT_EQ(vec.size(), vectorSize);
 
-    int valToMove = 2;
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.push_back(std::move(valToMove));
 
-    constexpr std::size_t incrementedVectorSize = vectorSize + 1;
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(valToMove, *lastElementOfVector);
 }
 
-TEST(Vector, CopyConstructorShouldCreateNewVectorByCopyingGiven)
+TEST_F(VectorTest, CopyConstructorShouldCreateNewVectorByCopyingGiven)
 {
-    constexpr std::size_t vectorSize = 3;
-
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
 
     my_vec::vector<int> vec2(vec);
 
@@ -252,14 +261,11 @@ TEST(Vector, CopyConstructorShouldCreateNewVectorByCopyingGiven)
     }
 }
 
-TEST(Vector, CopyAssignmentShouldCopyGivenVectorToVector)
+TEST_F(VectorTest, CopyAssignmentShouldCopyGivenVectorToVector)
 {
-    constexpr std::size_t vectorSize = 3;
-
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
-
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
     my_vec::vector<int> vec2;
+
     vec2 = vec;
 
     EXPECT_EQ(vec.size(), vec2.size());
@@ -269,12 +275,9 @@ TEST(Vector, CopyAssignmentShouldCopyGivenVectorToVector)
     }
 }
 
-TEST(Vector, MoveConstructorShouldConstructVectorByMovingContentOfGivenVector)
+TEST_F(VectorTest, MoveConstructorShouldConstructVectorByMovingContentOfGivenVector)
 {
-    constexpr std::size_t vectorSize = 3;
-
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
 
     my_vec::vector<int> vec2(std::move(vec));
 
@@ -286,12 +289,9 @@ TEST(Vector, MoveConstructorShouldConstructVectorByMovingContentOfGivenVector)
     }
 }
 
-TEST(Vector, MoveAssignmentShouldMoveDataFromGivenVector)
+TEST_F(VectorTest, MoveAssignmentShouldMoveDataFromGivenVector)
 {
-    constexpr std::size_t vectorSize = 3;
-
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
 
     my_vec::vector<int> vec2;
     vec2 = std::move(vec);
@@ -304,7 +304,7 @@ TEST(Vector, MoveAssignmentShouldMoveDataFromGivenVector)
     }
 }
 
-TEST(Vector, InitializerListConstructorShouldConstructVectorByUsingContentOfGivenInitializerList)
+TEST(VectorConstructor, InitializerListConstructorShouldConstructVectorByUsingContentOfGivenInitializerList)
 {
     auto initializerLst = { 1, 2, 3 };
     my_vec::vector<int> vec(initializerLst);
@@ -318,10 +318,10 @@ TEST(Vector, InitializerListConstructorShouldConstructVectorByUsingContentOfGive
     }
 }
 
-TEST(Vector, InitializerListAssignmentShouldCopyContentOfGivenInitializerListToVector)
+TEST_F(VectorTest, InitializerListAssignmentShouldCopyContentOfGivenInitializerListToVector)
 {
     auto initializerLst = { 1, 2, 3 };
-    my_vec::vector<int> vec;
+    auto vec = makeEmptyVector<int>();
     EXPECT_TRUE(vec.empty());
 
     vec = initializerLst;
@@ -335,12 +335,9 @@ TEST(Vector, InitializerListAssignmentShouldCopyContentOfGivenInitializerListToV
     }
 }
 
-TEST(Vector, ShrinkToFitShouldRemoveUnusedSpace)
+TEST_F(VectorTest, ShrinkToFitShouldRemoveUnusedSpace)
 {
-    constexpr std::size_t vectorSize = 3;
-
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorCapacity);
 
@@ -350,63 +347,65 @@ TEST(Vector, ShrinkToFitShouldRemoveUnusedSpace)
     EXPECT_EQ(vec.capacity(), vectorSize);
 }
 
-TEST(Vector, FrontShouldReturnReferenceToFirstElementInContainer)
+TEST_F(VectorTest, FrontShouldReturnReferenceToFirstElementInContainer)
 {
-    constexpr std::size_t vectorSize = 3;
     constexpr std::size_t firstElementIndex = 0;
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
 
-    my_vec::vector<int> vec(vectorSize);
-    vec[firstElementIndex] = newValue;
+    vec.front() = newValue;
+
+    EXPECT_EQ(vec[firstElementIndex], newValue);
     EXPECT_EQ(vec[firstElementIndex], vec.front());
     EXPECT_EQ(*vec.begin(), vec.front());
 }
 
-TEST(Vector, BackShouldReturnReferenceToLastElementInContainer)
+TEST_F(VectorTest, BackShouldReturnReferenceToLastElementInContainer)
 {
-    constexpr std::size_t vectorSize = 3;
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     constexpr std::size_t lastElementIndex = vectorSize - 1;
 
-    my_vec::vector<int> vec(vectorSize);
-    vec[lastElementIndex] = newValue;
+    vec.back() = newValue;
+
+    EXPECT_EQ(vec[lastElementIndex], newValue);
     EXPECT_EQ(vec[lastElementIndex], vec.back());
     EXPECT_EQ(*std::prev(vec.end()), vec.back());
 }
 
-TEST(Vector, AtShouldReturnReferenceToElementAtSpecificPositon)
+TEST_F(VectorTest, AtShouldReturnReferenceToElementAtSpecificPositon)
 {
-    constexpr std::size_t vectorSize = 1;
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     EXPECT_EQ(vec.at(0), defaultValue);
+
     vec.at(0) = newValue;
+
     EXPECT_EQ(vec.at(0), newValue);
 }
 
-TEST(Vector, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
+TEST_F(VectorTest, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
 {
-    constexpr std::size_t vectorSize = 1;
     constexpr std::size_t invalidPosition = 10;
-    my_vec::vector<int> vec(vectorSize);
+
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
+
     EXPECT_THROW(vec.at(invalidPosition), std::out_of_range);
 }
 
-TEST(Vector, DataShouldReturnsPointerToUnderlyingArrayInsideVector)
+TEST_F(VectorTest, DataShouldReturnsPointerToUnderlyingArrayInsideVector)
 {
-    constexpr std::size_t vectorSize = 2;
-    my_vec::vector<int> vec(vectorSize, newValue);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize, newValue);
+
     auto arrayFromVector = vec.data();
     for (std::size_t i = 0; i < vec.size(); ++i) {
         EXPECT_EQ(arrayFromVector[i], vec[i]);
     }
 }
 
-TEST(Vector, ClearShouldErasesAllElementsFromVector)
+TEST_F(VectorTest, ClearShouldErasesAllElementsFromVector)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
-
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorCapacity);
+
     vec.clear();
 
     EXPECT_EQ(vec.size(), 0);
@@ -414,60 +413,55 @@ TEST(Vector, ClearShouldErasesAllElementsFromVector)
     EXPECT_EQ(vec.capacity(), vectorCapacity);
 }
 
-TEST(Vector, InsertShouldInsertGivenValueBeforeBeginAndEndPosition)
+TEST_F(VectorTest, InsertShouldInsertGivenValueBeforeBeginAndEndPosition)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
 
+    auto vectorSizeAfterInsertion = vec.size() + 1;
     vec.insert(vec.begin(), valueToInsert);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*vec.begin(), valueToInsert);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 
     vec.insert(vec.end(), valueToInsert);
-    vectorSizeAfterInsertion++;
 
+    vectorSizeAfterInsertion++;
     EXPECT_EQ(*std::prev(vec.end()), valueToInsert);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 }
 
-TEST(Vector, InsertShouldInsertGivenValueBeforeMiddlePosition)
+TEST_F(VectorTest, InsertShouldInsertGivenValueBeforeMiddlePosition)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize, newValue);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
     auto middleIterator = vec.begin() + vectorSize / 2;
 
+    const auto vectorSizeAfterInsertion = vec.size() + 1;
     middleIterator = vec.insert(middleIterator, valueToInsert);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*middleIterator, valueToInsert);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 }
 
-TEST(Vector, InsertShouldInsertGivenValueAndIncreaseCapacity)
+TEST_F(VectorTest, InsertShouldInsertGivenValueAndIncreaseCapacity)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize, newValue);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize, newValue);
 
-    auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
+    const auto vectorSizeAfterInsertion = vec.size() + 1;
+    const auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
     vec.insert(vec.end(), valueToInsert);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*std::prev(vec.end()), valueToInsert);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
     EXPECT_EQ(vec.capacity(), capacityOfVectorAfterInsertion);
 }
 
-TEST(Vector, InsertOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
+TEST_F(VectorTest, InsertOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
 {
-    my_vec::vector<int> vec;
+    auto vec = makeEmptyVector<int>();
     EXPECT_TRUE(vec.empty());
 
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.insert(vec.begin(), newValue);
-    constexpr std::size_t incrementedVectorSize = 1;
 
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), defaultContainerCapacity);
@@ -475,31 +469,28 @@ TEST(Vector, InsertOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
     EXPECT_EQ(newValue, *lastElementOfVector);
 }
 
-TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
+TEST_F(VectorTest, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<std::string> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
     EXPECT_EQ(vec.size(), vectorSize);
 
+    const auto vectorSizeAfterEmplaceBack = vec.size() + 1;
     vec.emplace_back(stringValue);
-    constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
 
     EXPECT_EQ(vec.size(), vectorSizeAfterEmplaceBack);
     auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
 
-TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeAndOfContainer)
+TEST_F(VectorTest, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeAndOfContainer)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<std::string> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<std::string>(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), vectorSize);
 
+    const auto vectorSizeAfterEmplaceBack = vec.size() + 1;
     const auto capacityAfterEmplaceBack = 2 * vec.capacity();
     vec.emplace_back(stringValue);
-    constexpr std::size_t vectorSizeAfterEmplaceBack = vectorSize + 1;
 
     EXPECT_EQ(vec.size(), vectorSizeAfterEmplaceBack);
     EXPECT_EQ(vec.capacity(), capacityAfterEmplaceBack);
@@ -507,115 +498,107 @@ TEST(Vector, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSize
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
 
-TEST(Vector, EmplaceBackOnEmptyContainerShouldReserveSpaceAndAddElementAtEndOfContainer)
+TEST_F(VectorTest, EmplaceBackOnEmptyContainerShouldReserveSpaceAndAddElementAtEndOfContainer)
 {
-    my_vec::vector<std::string> vec;
+    auto vec = makeEmptyVector<std::string>();
     EXPECT_TRUE(vec.empty());
+
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.emplace_back(stringValue);
 
-    constexpr std::size_t incrementedVectorSize = 1;
+    auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), defaultContainerCapacity);
-
-    auto lastElementOfVector = std::prev(vec.end());
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
 
-TEST(Vector, PopBackShouldRemoveLastElementOfContainerAndDecreaseSize)
+TEST_F(VectorTest, PopBackShouldRemoveLastElementOfContainerAndDecreaseSize)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize, newValue);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize, newValue);
     EXPECT_EQ(vec.size(), vectorSize);
 
+    const auto vectorSizeAfterPopBack = vec.size() - 1;
     vec.pop_back();
-    auto vectorSizeAfterPopBack = vectorSize - 1;
 
     EXPECT_EQ(vec.size(), vectorSizeAfterPopBack);
 }
 
-TEST(Vector, EraseShouldErasesFirstElementsFromTheContainer)
+TEST_F(VectorTest, EraseShouldErasesFirstElementsFromTheContainer)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     vec.front() = newValue;
 
+    const auto vectorSizeAfterErase = vec.size() - 1;
     auto it = vec.erase(vec.begin());
-    const auto vectorSizeAfterErase = vectorSize - 1;
 
     EXPECT_EQ(vec.size(), vectorSizeAfterErase);
     EXPECT_NE(vec.front(), newValue);
     EXPECT_EQ(it, vec.begin());
 }
 
-TEST(Vector, EraseShouldErasesLastElementsFromTheContainer)
+TEST_F(VectorTest, EraseShouldErasesLastElementsFromTheContainer)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<int> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<int>(vectorSize);
     vec.back() = newValue;
-
     auto lastElement = vec.end() - 1;
+
+    const auto vectorSizeAfterErase = vec.size() - 1;
     auto it = vec.erase(lastElement);
-    const auto vectorSizeAfterErase = vectorSize - 1;
 
     EXPECT_EQ(vec.size(), vectorSizeAfterErase);
     EXPECT_NE(vec.back(), newValue);
     EXPECT_EQ(it, vec.end());
 }
 
-TEST(Vector, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
+TEST_F(VectorTest, EmplaceShouldInsertGivenValueBeforeBeginAndEndPosition)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<std::string> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
 
+    auto vectorSizeAfterInsertion = vec.size() + 1;
     vec.insert(vec.begin(), stringValue);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*vec.begin(), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 
-    vec.insert(vec.end(), stringValue);
     vectorSizeAfterInsertion++;
+    vec.insert(vec.end(), stringValue);
 
     EXPECT_EQ(*std::prev(vec.end()), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 }
 
-TEST(Vector, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
+TEST_F(VectorTest, EmplaceShouldInsertGivenValueBeforeMiddlePosition)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<std::string> vec(vectorSize);
-    vec.reserve(vectorCapacity);
+    auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
     auto middleIterator = vec.begin() + vectorSize / 2;
 
+    const auto vectorSizeAfterInsertion = vec.size() + 1;
     middleIterator = vec.insert(middleIterator, stringValue);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*middleIterator, stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
 }
 
-TEST(Vector, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
+TEST_F(VectorTest, EmplaceShouldInsertGivenValueAndIncreaseCapacity)
 {
-    constexpr std::size_t vectorSize = 3;
-    my_vec::vector<std::string> vec(vectorSize);
+    auto vec = makeVectorWithSameSizeAndCapacity<std::string>(vectorSize);
 
-    auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
+    const auto vectorSizeAfterInsertion = vec.size() + 1;
+    const auto capacityOfVectorAfterInsertion = vec.capacity() * 2;
     vec.insert(vec.end(), stringValue);
-    auto vectorSizeAfterInsertion = vectorSize + 1;
 
     EXPECT_EQ(*std::prev(vec.end()), stringValue);
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
     EXPECT_EQ(vec.capacity(), capacityOfVectorAfterInsertion);
 }
 
-TEST(Vector, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
+TEST_F(VectorTest, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
 {
-    my_vec::vector<std::string> vec;
+    auto vec = makeEmptyVector<std::string>();
     EXPECT_TRUE(vec.empty());
 
+    const auto incrementedVectorSize = vec.size() + 1;
     vec.insert(vec.begin(), stringValue);
-    constexpr std::size_t incrementedVectorSize = 1;
 
     EXPECT_EQ(vec.size(), incrementedVectorSize);
     EXPECT_EQ(vec.capacity(), defaultContainerCapacity);
@@ -623,19 +606,17 @@ TEST(Vector, EmplaceOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
     EXPECT_EQ(stringValue, *lastElementOfVector);
 }
 
-TEST(Vector, SwapShouldExchangeContentBetweenContainers)
+TEST_F(VectorTest, SwapShouldExchangeContentBetweenContainers)
 {
     constexpr int valueInFirstVector = 99;
     constexpr std::size_t firstVectorSize = 3;
     constexpr std::size_t firstVectorCapacity = 5;
-    my_vec::vector<int> firstVector(firstVectorSize, valueInFirstVector);
-    firstVector.reserve(firstVectorCapacity);
+    auto firstVector = makeVectorWithSizeAndCapacity<int>(firstVectorSize, firstVectorCapacity, valueInFirstVector);
 
     constexpr int valueInSecondVector = 66;
     constexpr std::size_t secondVectorSize = 6;
     constexpr std::size_t secondVectorCapacity = 8;
-    my_vec::vector<int> secondVector(secondVectorSize, valueInSecondVector);
-    secondVector.reserve(secondVectorCapacity);
+    auto secondVector = makeVectorWithSizeAndCapacity<int>(secondVectorSize, secondVectorCapacity, valueInSecondVector);
 
     firstVector.swap(secondVector);
 
