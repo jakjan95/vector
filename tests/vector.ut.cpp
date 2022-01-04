@@ -356,6 +356,33 @@ TEST_F(VectorTest, InitializerListAssignmentShouldCopyContentOfGivenInitializerL
     }
 }
 
+TEST(VectorConstructor, ConstructorWithRangesShouldConstructVectorByUsingContentOfRangeFromVector)
+{
+    my_vec::vector<int> baseVector = { 1, 2, 3, 4, 5 };
+
+    my_vec::vector<int> vec(baseVector.begin(), baseVector.end());
+
+    EXPECT_EQ(vec.size(), baseVector.size());
+    EXPECT_EQ(vec.capacity(), baseVector.capacity());
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(baseVector[i], vec[i]);
+    }
+}
+
+TEST(VectorConstructor, ConstructorWithRangesShouldConstructVectorByUsingContentOfRangeFromRawArray)
+{
+    int baseArray[] = { 1, 2, 3, 4, 5 };
+    const auto sizeOfArray = sizeof(baseArray) / sizeof(baseArray[0]);
+
+    my_vec::vector<int> vec(std::begin(baseArray), std::end(baseArray));
+
+    EXPECT_EQ(vec.size(), sizeOfArray);
+    EXPECT_EQ(vec.capacity(), sizeOfArray);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(baseArray[i], vec[i]);
+    }
+}
+
 TEST_F(VectorTest, ShrinkToFitShouldRemoveUnusedSpace)
 {
     auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);

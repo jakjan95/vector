@@ -30,6 +30,8 @@ public:
     constexpr vector& operator=(vector&& other) noexcept;
     constexpr vector(std::initializer_list<T> init);
     constexpr vector& operator=(std::initializer_list<T> ilist);
+    template <class InputIt>
+    constexpr vector(InputIt first, InputIt last);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference at(size_type pos);
@@ -170,6 +172,19 @@ constexpr vector<T>& vector<T>::operator=(std::initializer_list<T> ilist)
     }
 
     return *this;
+}
+
+template <typename T>
+template <class InputIt>
+constexpr vector<T>::vector(InputIt first, InputIt last)
+    : elem_ { new T[static_cast<size_type>(last - first)] }
+    , size_ { static_cast<size_type>(last - first) }
+    , space_ { static_cast<size_type>(last - first) }
+{
+    size_type arrIndex = 0;
+    for (auto it = first; it != last; ++it) {
+        elem_[arrIndex++] = *it;
+    }
 }
 
 template <typename T>
