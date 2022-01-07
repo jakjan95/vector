@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "vector.hpp"
@@ -11,6 +12,10 @@ constexpr int newValue = 5;
 constexpr std::size_t vectorCapacity = 6;
 constexpr int valueToInsert = 42;
 const std::string stringValue = "string";
+
+using BoolVectorBlockType = std::uint64_t;
+constexpr std::size_t baseCapacityForBoolVector = 8 * sizeof(BoolVectorBlockType);
+constexpr bool boolDefaultValue = false;
 
 class VectorTest : public ::testing::Test {
 protected:
@@ -32,6 +37,31 @@ protected:
         auto vec = my_vec::vector<T>(size, value);
         vec.reserve(capacity);
         return vec;
+    }
+};
+
+class VectorBoolTest : public ::testing::Test {
+protected:
+    my_vec::vector<bool> makeEmptyBoolVector()
+    {
+        return my_vec::vector<bool> {};
+    }
+
+    my_vec::vector<bool> makeBoolVectorWithSameSizeAndCapacity(std::size_t size, bool value = false)
+    {
+        return my_vec::vector<bool>(size, value);
+    }
+
+    my_vec::vector<bool> makeBoolVectorWithSizeAndCapacity(std::size_t size, [[maybe_unused]] std::size_t capacity, bool value = false)
+    {
+        auto vec = my_vec::vector<bool>(size, value);
+        // vec.reserve(capacity);
+        return vec;
+    }
+
+    constexpr inline std::size_t getExpectedCapacityForVectorSize(std::size_t vectorSize)
+    {
+        return static_cast<std::size_t>(std::ceil(static_cast<double>(vectorSize) / sizeof(BoolVectorBlockType))) * baseCapacityForBoolVector;
     }
 };
 
@@ -680,5 +710,65 @@ TEST_F(VectorTest, SwapShouldExchangeContentBetweenContainers)
 
     for (std::size_t i = 0; i < secondVector.size(); ++i) {
         EXPECT_EQ(secondVector[i], valueInFirstVector);
+    }
+}
+
+TEST_F(VectorBoolTest, DefaultConstructorShouldCreateEmptyVector)
+{
+    my_vec::vector<bool> vec;
+
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.capacity(), 0);
+    EXPECT_TRUE(vec.empty());
+}
+
+TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithDefaultValue)
+{
+    my_vec::vector<bool> vec(vectorSize);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), getExpectedCapacityForVectorSize(vectorSize));
+}
+
+TEST_F(VectorBoolTest, SquareBracketOperatorShouldReadElementAtSpecificPositonUsingReferenceProxy)
+{
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_EQ(vec[0], boolDefaultValue);
+    EXPECT_EQ(vec[vec.size() - 1], boolDefaultValue);
+}
+
+TEST_F(VectorBoolTest, SquareBracketOperatorShouldWriteElementAtSpecificPositonUsingReferenceProxy)
+{
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_EQ(vec[0], boolDefaultValue);
+    vec[0] = true;
+    EXPECT_TRUE(vec[0]);
+    vec[1] = true;
+    EXPECT_TRUE(vec[1]);
+    vec[1] = true;
+    EXPECT_TRUE(vec[1]);
+    vec[1] = boolDefaultValue;
+    EXPECT_EQ(vec[1], boolDefaultValue);
+}
+
+TEST_F(VectorBoolTest, SquareBracketOperatorShouldFlipElementAtSpecificPositonUsingReferenceProxy)
+{
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_FALSE(vec[0]);
+    vec[0].flip();
+    EXPECT_TRUE(vec[0]);
+    vec[0].flip();
+    EXPECT_FALSE(vec[0]);
+}
+
+TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithGivenValueXD)
+{
+    bool givenValue = true;
+    my_vec::vector<bool> vec(vectorSize, givenValue);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), getExpectedCapacityForVectorSize(vectorSize));
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], givenValue);
     }
 }

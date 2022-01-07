@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <stdexcept>
@@ -80,6 +82,93 @@ private:
     size_type space_;
     const size_type defaultContainerCapacity_ = 8;
 };
+
+
+/*
+* A memory space optimized specialization of vector for bools
+* which offers fixed time access to individual elements in any order.
+*/
+
+template <>
+class vector<bool> {
+    using block_t = std::uint64_t;
+
+public:
+    using value_type = bool;
+    using size_type = std::size_t;
+    using const_reference = bool;
+    // using pointer = TODO;
+    // using const_pointer = TODO;
+    // using iterator = TODO;
+    // using const_iterator = TODO;
+    // using reverse_iterator = std::reverse_iterator<iterator>;
+    // using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+    class reference {
+    public:
+        ~reference() = default;
+
+        constexpr reference& operator=(bool x) noexcept
+        {
+            if (x) {
+                *value_ |= mask_;
+            } else {
+                *value_ &= ~mask_;
+            }
+            return *this;
+        }
+
+        constexpr reference& operator=(const reference& x) noexcept
+        {
+            *value_ = bool(x);
+            return *this;
+        }
+
+        constexpr operator bool() const noexcept
+        {
+            return !!(*value_ & mask_);
+        }
+
+        constexpr void flip() noexcept
+        {
+            *value_ ^= mask_;
+        }
+
+    private:
+        block_t* value_;
+        block_t mask_;
+        friend vector<bool>;
+
+        constexpr reference(block_t* value, block_t mask) noexcept
+            : value_ { value }
+            , mask_ { mask }
+        {
+        }
+    };
+
+    constexpr vector() noexcept;
+    vector(size_type count, bool value = false);
+    ~vector() noexcept { delete[] elem_; }
+
+    constexpr reference operator[](size_type pos);
+    constexpr const_reference operator[](size_type pos) const;
+
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    size_type size() const { return size_; }
+    size_type capacity() const { return space_; }
+
+private:
+    block_t* elem_;
+    size_type size_;
+    size_type space_;
+
+    constexpr inline size_type getNumberOfBlocksTypeToAllocateSpace(size_type count) const;
+    constexpr inline size_type getCapacityValueForAllocatedSpace(size_type count) const;
+};
+
+/*
+* Generic vector functions
+*/
 
 template <typename T>
 constexpr vector<T>::vector() noexcept
@@ -353,5 +442,59 @@ constexpr void vector<T>::swap(vector& other) noexcept
     elem_ = tmpElem;
     size_ = tmpSize;
     space_ = tmpSpace;
+}
+
+/*
+* Vector bool specialization functions
+*/
+
+constexpr vector<bool>::vector() noexcept
+    : elem_ { nullptr }
+    , size_ { 0 }
+    , space_ { 0 }
+{
+}
+
+vector<bool>::vector(size_type count, bool value)
+    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(count)] }
+    , size_ { count }
+    , space_ { getCapacityValueForAllocatedSpace(count) }
+{
+    constexpr auto bitsInBlock = 8 * sizeof(block_t);
+    for (size_type i = 0; i < count; ++i) {
+        const auto blockWithBit = i / bitsInBlock;
+        const auto bitPositionInBlock = i % bitsInBlock;
+        const auto mask = 1ULL << bitPositionInBlock;
+        elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
+    }
+}
+
+constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
+{
+    constexpr auto bitsInBlock = 8 * sizeof(block_t);
+    const auto blockWithBit = pos / bitsInBlock;
+    const auto bitPositionInBlock = pos % bitsInBlock;
+    const auto mask = 1ULL << bitPositionInBlock;
+    return reference(&elem_[blockWithBit], mask);
+}
+
+constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) const
+{
+    constexpr auto bitsInBlock = 8 * sizeof(block_t);
+    const auto blockWithBit = pos / bitsInBlock;
+    const auto bitPositionInBlock = pos % bitsInBlock;
+    const auto mask = 1ULL << bitPositionInBlock;
+    return reference(&elem_[blockWithBit], mask);
+}
+
+constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
+{
+    return static_cast<size_type>(std::ceil(static_cast<double>(count) / sizeof(block_t)));
+}
+
+constexpr inline vector<bool>::size_type vector<bool>::getCapacityValueForAllocatedSpace(size_type count) const
+{
+    constexpr size_t numOfBitsInByte = 8;
+    return getNumberOfBlocksTypeToAllocateSpace(count) * numOfBitsInByte * sizeof(block_t);
 }
 }
