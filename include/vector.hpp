@@ -493,6 +493,7 @@ constexpr void vector<bool>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
         block_t* tmp = new block_t[getNumberOfBlocksTypeToAllocateSpace(new_cap)];
+        std::fill(tmp, tmp + getNumberOfBlocksTypeToAllocateSpace(new_cap), block_t {});
         constexpr auto bitsInBlock = 8 * sizeof(block_t);
         for (size_type i = 0; i < size(); ++i) {
             const auto blockWithBit = i / bitsInBlock;
