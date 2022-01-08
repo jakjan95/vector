@@ -52,10 +52,10 @@ protected:
         return my_vec::vector<bool>(size, value);
     }
 
-    my_vec::vector<bool> makeBoolVectorWithSizeAndCapacity(std::size_t size, [[maybe_unused]] std::size_t capacity, bool value = false)
+    my_vec::vector<bool> makeBoolVectorWithSizeAndCapacity(std::size_t size, std::size_t capacity, bool value = false)
     {
         auto vec = my_vec::vector<bool>(size, value);
-        // vec.reserve(capacity);
+        vec.reserve(capacity);
         return vec;
     }
 
@@ -789,6 +789,74 @@ TEST_F(VectorBoolTest, ReserveShouldIncreaseBoolVectorCapacity)
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), newVectorCapacity);
     for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], givenValue);
+    }
+}
+
+TEST_F(VectorBoolTest, ResizeShouldResizesBoolVectorToContainCountElements)
+{
+    constexpr auto vectorSize = baseCapacityForBoolVector / 4;
+    constexpr auto newVectorSize = baseCapacityForBoolVector / 2;
+
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+
+    vec.resize(newVectorSize);
+
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+}
+
+TEST_F(VectorBoolTest, ResizeOfBoolVectorWithValueHigherThanCapacityShouldIncreaseCapacityOfContainer)
+{
+    constexpr auto vectorSize = baseCapacityForBoolVector / 4;
+    constexpr auto newVectorSize = baseCapacityForBoolVector + baseCapacityForBoolVector / 2;
+
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+
+    vec.resize(newVectorSize);
+
+    constexpr auto expectedVectorCapacity = baseCapacityForBoolVector * 2;
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), expectedVectorCapacity);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+}
+
+TEST_F(VectorBoolTest, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
+{
+    constexpr auto vectorSize = baseCapacityForBoolVector / 4;
+    constexpr auto newVectorSize = baseCapacityForBoolVector / 2;
+    constexpr auto givenValue = true;
+
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+
+    vec.resize(newVectorSize, givenValue);
+
+    EXPECT_EQ(vec.size(), newVectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        EXPECT_EQ(vec[i], boolDefaultValue);
+    }
+    for (std::size_t i = vectorSize; i < vec.size(); ++i) {
         EXPECT_EQ(vec[i], givenValue);
     }
 }

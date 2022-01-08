@@ -158,6 +158,8 @@ public:
     constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
 
+    constexpr void resize( size_type count, const value_type& value = {});
+
 private:
     block_t* elem_;
     size_type size_;
@@ -505,18 +507,34 @@ constexpr void vector<bool>::reserve(size_type new_cap)
 
         delete[] elem_;
         elem_ = tmp;
-        space_ = new_cap;
+        space_ = getCapacityValueForAllocatedSpace(new_cap);
     }
+}
+
+constexpr void vector<bool>::resize(size_type count, const value_type& value)
+{
+    reserve(count);
+    if (count > size()) {
+        constexpr auto bitsInBlock = 8 * sizeof(block_t);
+        for (size_type i = size(); i < count; ++i) {
+            const auto blockWithBit = i / bitsInBlock;
+            const auto bitPositionInBlock = i % bitsInBlock;
+            const auto mask = 1ULL << bitPositionInBlock;
+            elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
+        }
+    }
+    size_ = count;
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
 {
-    return static_cast<size_type>(std::ceil(static_cast<double>(count) / sizeof(block_t)));
+    constexpr auto blockCapacity = sizeof(block_t) * 8;
+    return static_cast<size_type>(std::ceil(static_cast<double>(count) / blockCapacity));
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getCapacityValueForAllocatedSpace(size_type count) const
 {
-    constexpr size_t numOfBitsInByte = 8;
-    return getNumberOfBlocksTypeToAllocateSpace(count) * numOfBitsInByte * sizeof(block_t);
+    constexpr auto blockCapacity = sizeof(block_t) * 8;
+    return getNumberOfBlocksTypeToAllocateSpace(count) * blockCapacity;
 }
 }
