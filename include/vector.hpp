@@ -167,6 +167,8 @@ private:
 
     constexpr inline size_type getNumberOfBlocksTypeToAllocateSpace(size_type count) const;
     constexpr inline size_type getCapacityValueForAllocatedSpace(size_type count) const;
+    constexpr std::tuple<size_type, size_type>  getBlockWithBitAndMask(size_type position) const;
+    constexpr void setValueAtPosition(size_type position, bool value);
 };
 
 /*
@@ -464,30 +466,20 @@ vector<bool>::vector(size_type count, bool value)
     , space_ { getCapacityValueForAllocatedSpace(count) }
 {
     std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(count), block_t {});
-    constexpr auto bitsInBlock = 8 * sizeof(block_t);
     for (size_type i = 0; i < count; ++i) {
-        const auto blockWithBit = i / bitsInBlock;
-        const auto bitPositionInBlock = i % bitsInBlock;
-        const auto mask = 1ULL << bitPositionInBlock;
-        elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
+        setValueAtPosition(i, value);
     }
 }
 
 constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
 {
-    constexpr auto bitsInBlock = 8 * sizeof(block_t);
-    const auto blockWithBit = pos / bitsInBlock;
-    const auto bitPositionInBlock = pos % bitsInBlock;
-    const auto mask = 1ULL << bitPositionInBlock;
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(pos);
     return reference(elem_[blockWithBit], mask);
 }
 
 constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) const
 {
-    constexpr auto bitsInBlock = 8 * sizeof(block_t);
-    const auto blockWithBit = pos / bitsInBlock;
-    const auto bitPositionInBlock = pos % bitsInBlock;
-    const auto mask = 1ULL << bitPositionInBlock;
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(pos);
     return reference(elem_[blockWithBit], mask);
 }
 
@@ -496,11 +488,8 @@ constexpr void vector<bool>::reserve(size_type new_cap)
     if (new_cap > capacity()) {
         block_t* tmp = new block_t[getNumberOfBlocksTypeToAllocateSpace(new_cap)];
         std::fill(tmp, tmp + getNumberOfBlocksTypeToAllocateSpace(new_cap), block_t {});
-        constexpr auto bitsInBlock = 8 * sizeof(block_t);
         for (size_type i = 0; i < size(); ++i) {
-            const auto blockWithBit = i / bitsInBlock;
-            const auto bitPositionInBlock = i % bitsInBlock;
-            const auto mask = 1ULL << bitPositionInBlock;
+            const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
             const auto value = !!(elem_[blockWithBit] & mask);
             tmp[blockWithBit] ^= (-value ^ tmp[blockWithBit]) & mask;
         }
@@ -515,12 +504,8 @@ constexpr void vector<bool>::resize(size_type count, const value_type& value)
 {
     reserve(count);
     if (count > size()) {
-        constexpr auto bitsInBlock = 8 * sizeof(block_t);
         for (size_type i = size(); i < count; ++i) {
-            const auto blockWithBit = i / bitsInBlock;
-            const auto bitPositionInBlock = i % bitsInBlock;
-            const auto mask = 1ULL << bitPositionInBlock;
-            elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
+            setValueAtPosition(i, value);
         }
     }
     size_ = count;
@@ -536,5 +521,20 @@ constexpr inline vector<bool>::size_type vector<bool>::getCapacityValueForAlloca
 {
     constexpr auto blockCapacity = sizeof(block_t) * 8;
     return getNumberOfBlocksTypeToAllocateSpace(count) * blockCapacity;
+}
+
+constexpr std::tuple<vector<bool>::size_type, vector<bool>::size_type> vector<bool>::getBlockWithBitAndMask(size_type position) const
+{
+    constexpr auto bitsInBlock = 8 * sizeof(block_t);
+    const auto blockWithBit = position / bitsInBlock;
+    const auto bitPositionInBlock = position % bitsInBlock;
+    const auto mask = 1ULL << bitPositionInBlock;
+    return std::make_tuple(blockWithBit, mask);
+}
+
+constexpr void vector<bool>::setValueAtPosition(size_type position, bool value)
+{
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(position);
+    elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
 }
 }
