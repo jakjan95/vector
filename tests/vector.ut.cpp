@@ -772,3 +772,23 @@ TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfEle
         EXPECT_EQ(vec[i], givenValue);
     }
 }
+
+TEST_F(VectorBoolTest, ReserveShouldIncreaseBoolVectorCapacity)
+{
+    constexpr auto givenValue = true;
+    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize, givenValue);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), getExpectedCapacityForVectorSize(vectorSize));
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], givenValue);
+    }
+
+    constexpr std::size_t newVectorCapacity = 2 * baseCapacityForBoolVector;
+    vec.reserve(newVectorCapacity);
+
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), newVectorCapacity);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], givenValue);
+    }
+}

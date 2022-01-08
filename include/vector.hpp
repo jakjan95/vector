@@ -155,6 +155,7 @@ public:
 
     [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
     constexpr size_type size() const noexcept { return size_; }
+    constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
 
 private:
@@ -485,6 +486,25 @@ constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) 
     const auto bitPositionInBlock = pos % bitsInBlock;
     const auto mask = 1ULL << bitPositionInBlock;
     return reference(&elem_[blockWithBit], mask);
+}
+
+constexpr void vector<bool>::reserve(size_type new_cap)
+{
+    if (new_cap > capacity()) {
+        block_t* tmp = new block_t[getNumberOfBlocksTypeToAllocateSpace(new_cap)];
+        constexpr auto bitsInBlock = 8 * sizeof(block_t);
+        for (size_type i = 0; i < size(); ++i) {
+            const auto blockWithBit = i / bitsInBlock;
+            const auto bitPositionInBlock = i % bitsInBlock;
+            const auto mask = 1ULL << bitPositionInBlock;
+            const auto value = !!(elem_[blockWithBit] & mask);
+            tmp[blockWithBit] ^= (-value ^ tmp[blockWithBit]) & mask;
+        }
+
+        delete[] elem_;
+        elem_ = tmp;
+        space_ = new_cap;
+    }
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
