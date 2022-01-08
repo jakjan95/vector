@@ -111,35 +111,35 @@ public:
         constexpr reference& operator=(bool x) noexcept
         {
             if (x) {
-                *value_ |= mask_;
+                value_ |= mask_;
             } else {
-                *value_ &= ~mask_;
+                value_ &= ~mask_;
             }
             return *this;
         }
 
         constexpr reference& operator=(const reference& x) noexcept
         {
-            *value_ = bool(x);
+            value_ = bool(x);
             return *this;
         }
 
         constexpr operator bool() const noexcept
         {
-            return !!(*value_ & mask_);
+            return !!(value_ & mask_);
         }
 
         constexpr void flip() noexcept
         {
-            *value_ ^= mask_;
+            value_ ^= mask_;
         }
 
     private:
-        block_t* value_;
+        block_t& value_;
         block_t mask_;
         friend vector<bool>;
 
-        constexpr reference(block_t* value, block_t mask) noexcept
+        constexpr reference(block_t& value, block_t mask) noexcept
             : value_ { value }
             , mask_ { mask }
         {
@@ -477,7 +477,7 @@ constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
     const auto blockWithBit = pos / bitsInBlock;
     const auto bitPositionInBlock = pos % bitsInBlock;
     const auto mask = 1ULL << bitPositionInBlock;
-    return reference(&elem_[blockWithBit], mask);
+    return reference(elem_[blockWithBit], mask);
 }
 
 constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) const
@@ -486,7 +486,7 @@ constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) 
     const auto blockWithBit = pos / bitsInBlock;
     const auto bitPositionInBlock = pos % bitsInBlock;
     const auto mask = 1ULL << bitPositionInBlock;
-    return reference(&elem_[blockWithBit], mask);
+    return reference(elem_[blockWithBit], mask);
 }
 
 constexpr void vector<bool>::reserve(size_type new_cap)
