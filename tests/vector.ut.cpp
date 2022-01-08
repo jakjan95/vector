@@ -47,7 +47,7 @@ protected:
         return my_vec::vector<bool> {};
     }
 
-    my_vec::vector<bool> makeBoolVectorWithSameSizeAndCapacity(std::size_t size, bool value = false)
+    my_vec::vector<bool> makeBoolVectorWithSizeAndDefaultCapacity(std::size_t size, bool value = false)
     {
         return my_vec::vector<bool>(size, value);
     }
@@ -713,7 +713,7 @@ TEST_F(VectorTest, SwapShouldExchangeContentBetweenContainers)
     }
 }
 
-TEST_F(VectorBoolTest, DefaultConstructorShouldCreateEmptyVector)
+TEST_F(VectorBoolTest, DefaultConstructorShouldCreateEmptyBoolVector)
 {
     my_vec::vector<bool> vec;
 
@@ -722,7 +722,7 @@ TEST_F(VectorBoolTest, DefaultConstructorShouldCreateEmptyVector)
     EXPECT_TRUE(vec.empty());
 }
 
-TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithDefaultValue)
+TEST_F(VectorBoolTest, ConstructorShouldConstructBoolVectorWithGivenCountCopiesOfElementsWithDefaultValue)
 {
     my_vec::vector<bool> vec(vectorSize);
 
@@ -732,14 +732,14 @@ TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfEle
 
 TEST_F(VectorBoolTest, SquareBracketOperatorShouldReadElementAtSpecificPositonUsingReferenceProxy)
 {
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_EQ(vec[0], boolDefaultValue);
     EXPECT_EQ(vec[vec.size() - 1], boolDefaultValue);
 }
 
 TEST_F(VectorBoolTest, SquareBracketOperatorShouldWriteElementAtSpecificPositonUsingReferenceProxy)
 {
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_EQ(vec[0], boolDefaultValue);
     vec[0] = true;
     EXPECT_TRUE(vec[0]);
@@ -753,7 +753,7 @@ TEST_F(VectorBoolTest, SquareBracketOperatorShouldWriteElementAtSpecificPositonU
 
 TEST_F(VectorBoolTest, SquareBracketOperatorShouldFlipElementAtSpecificPositonUsingReferenceProxy)
 {
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_FALSE(vec[0]);
     vec[0].flip();
     EXPECT_TRUE(vec[0]);
@@ -761,9 +761,10 @@ TEST_F(VectorBoolTest, SquareBracketOperatorShouldFlipElementAtSpecificPositonUs
     EXPECT_FALSE(vec[0]);
 }
 
-TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfElementsWithGivenValueXD)
+TEST_F(VectorBoolTest, ConstructorShouldConstructBoolVectorWithGivenCountCopiesOfElementsWithGivenValue)
 {
     bool givenValue = true;
+
     my_vec::vector<bool> vec(vectorSize, givenValue);
 
     EXPECT_EQ(vec.size(), vectorSize);
@@ -776,7 +777,8 @@ TEST_F(VectorBoolTest, ConstructorShouldConstructVectorWithGivenCountCopiesOfEle
 TEST_F(VectorBoolTest, ReserveShouldIncreaseBoolVectorCapacity)
 {
     constexpr auto givenValue = true;
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize, givenValue);
+
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize, givenValue);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), getExpectedCapacityForVectorSize(vectorSize));
     for (std::size_t i = 0; i < vec.size(); ++i) {
@@ -798,7 +800,7 @@ TEST_F(VectorBoolTest, ResizeShouldResizesBoolVectorToContainCountElements)
     constexpr auto vectorSize = baseCapacityForBoolVector / 4;
     constexpr auto newVectorSize = baseCapacityForBoolVector / 2;
 
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
     for (std::size_t i = 0; i < vec.size(); ++i) {
@@ -819,7 +821,7 @@ TEST_F(VectorBoolTest, ResizeOfBoolVectorWithValueHigherThanCapacityShouldIncrea
     constexpr auto vectorSize = baseCapacityForBoolVector / 4;
     constexpr auto newVectorSize = baseCapacityForBoolVector + baseCapacityForBoolVector / 2;
 
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
     for (std::size_t i = 0; i < vec.size(); ++i) {
@@ -836,13 +838,13 @@ TEST_F(VectorBoolTest, ResizeOfBoolVectorWithValueHigherThanCapacityShouldIncrea
     }
 }
 
-TEST_F(VectorBoolTest, ResizeOfContainerWithGivenValueShouldSetGivenValueForNewElements)
+TEST_F(VectorBoolTest, ResizeOfBoolVectorWithGivenValueShouldSetGivenValueForNewElements)
 {
     constexpr auto vectorSize = baseCapacityForBoolVector / 4;
     constexpr auto newVectorSize = baseCapacityForBoolVector / 2;
     constexpr auto givenValue = true;
 
-    auto vec = makeBoolVectorWithSameSizeAndCapacity(vectorSize);
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     EXPECT_EQ(vec.size(), vectorSize);
     EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
     for (std::size_t i = 0; i < vectorSize; ++i) {
