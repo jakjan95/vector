@@ -154,8 +154,8 @@ public:
     constexpr const_reference operator[](size_type pos) const;
 
     [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
-    size_type size() const { return size_; }
-    size_type capacity() const { return space_; }
+    constexpr size_type size() const noexcept { return size_; }
+    constexpr size_type capacity() const noexcept { return space_; }
 
 private:
     block_t* elem_;
