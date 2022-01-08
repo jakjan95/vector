@@ -461,6 +461,7 @@ vector<bool>::vector(size_type count, bool value)
     , size_ { count }
     , space_ { getCapacityValueForAllocatedSpace(count) }
 {
+    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(count), block_t {});
     constexpr auto bitsInBlock = 8 * sizeof(block_t);
     for (size_type i = 0; i < count; ++i) {
         const auto blockWithBit = i / bitsInBlock;
