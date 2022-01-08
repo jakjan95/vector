@@ -16,6 +16,7 @@ const std::string stringValue = "string";
 using BoolVectorBlockType = std::uint64_t;
 constexpr std::size_t baseCapacityForBoolVector = 8 * sizeof(BoolVectorBlockType);
 constexpr bool boolDefaultValue = false;
+constexpr bool newBoolValue = true;
 
 class VectorTest : public ::testing::Test {
 protected:
@@ -861,4 +862,49 @@ TEST_F(VectorBoolTest, ResizeOfBoolVectorWithGivenValueShouldSetGivenValueForNew
     for (std::size_t i = vectorSize; i < vec.size(); ++i) {
         EXPECT_EQ(vec[i], givenValue);
     }
+}
+
+TEST_F(VectorBoolTest, PushBackShouldAddElementAtEndOfBoolVectorAndIncrementSize)
+{
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+
+    const auto incrementedVectorSize = vec.size() + 1;
+    vec.push_back(newBoolValue);
+
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    auto lastElementOfVector = vec[vec.size() - 1];
+    EXPECT_EQ(newBoolValue, lastElementOfVector);
+}
+
+TEST_F(VectorBoolTest, PushBackOnEmptyBoolVectorShouldReserveSpaceAndAddElementAtEndOfContainer)
+{
+    auto vec = makeEmptyBoolVector();
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec.capacity(), 0);
+
+    const auto incrementedVectorSize = vec.size() + 1;
+    vec.push_back(newBoolValue);
+
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+    auto lastElementOfVector = vec[vec.size() - 1];
+    EXPECT_EQ(newBoolValue, lastElementOfVector);
+}
+
+TEST_F(VectorBoolTest, PushBackShouldAddElementAtEndOfBoolContainerWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacity)
+{
+    auto vec = makeBoolVectorWithSizeAndCapacity(baseCapacityForBoolVector, baseCapacityForBoolVector);
+    EXPECT_EQ(vec.size(), baseCapacityForBoolVector);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+
+    const auto incrementedVectorSize = vec.size() + 1;
+    vec.push_back(newBoolValue);
+
+    const auto expectedVectorCapacity = 2 * baseCapacityForBoolVector;
+    EXPECT_EQ(vec.size(), incrementedVectorSize);
+    EXPECT_EQ(vec.capacity(), expectedVectorCapacity);
+    auto lastElementOfVector = vec[vec.size() - 1];
+    EXPECT_EQ(newBoolValue, lastElementOfVector);
 }

@@ -158,6 +158,7 @@ public:
     constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
 
+    constexpr void push_back(const value_type& value);
     constexpr void resize( size_type count, const value_type& value = {});
 
 private:
@@ -509,6 +510,17 @@ constexpr void vector<bool>::resize(size_type count, const value_type& value)
         }
     }
     size_ = count;
+}
+
+constexpr void vector<bool>::push_back(const value_type& value)
+{
+    if (capacity() == 0) {
+        constexpr auto blockCapacity = sizeof(block_t) * 8;
+        reserve(blockCapacity);
+    } else if (size() >= capacity()) {
+        reserve(2 * capacity());
+    }
+    setValueAtPosition(size_++, value);
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
