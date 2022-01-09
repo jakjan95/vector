@@ -170,6 +170,7 @@ private:
     constexpr inline size_type getCapacityValueForAllocatedSpace(size_type count) const;
     constexpr std::tuple<size_type, size_type>  getBlockWithBitAndMask(size_type position) const;
     constexpr void setValueAtPosition(size_type position, bool value);
+    constexpr inline auto getBlockCapacity() const { return sizeof(block_t) * 8; }
 };
 
 /*
@@ -515,8 +516,7 @@ constexpr void vector<bool>::resize(size_type count, const value_type& value)
 constexpr void vector<bool>::push_back(const value_type& value)
 {
     if (capacity() == 0) {
-        constexpr auto blockCapacity = sizeof(block_t) * 8;
-        reserve(blockCapacity);
+        reserve(getBlockCapacity());
     } else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
@@ -525,21 +525,18 @@ constexpr void vector<bool>::push_back(const value_type& value)
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
 {
-    constexpr auto blockCapacity = sizeof(block_t) * 8;
-    return static_cast<size_type>(std::ceil(static_cast<double>(count) / blockCapacity));
+    return static_cast<size_type>(std::ceil(static_cast<double>(count) / static_cast<double>(getBlockCapacity())));
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getCapacityValueForAllocatedSpace(size_type count) const
 {
-    constexpr auto blockCapacity = sizeof(block_t) * 8;
-    return getNumberOfBlocksTypeToAllocateSpace(count) * blockCapacity;
+    return getNumberOfBlocksTypeToAllocateSpace(count) * getBlockCapacity();
 }
 
 constexpr std::tuple<vector<bool>::size_type, vector<bool>::size_type> vector<bool>::getBlockWithBitAndMask(size_type position) const
 {
-    constexpr auto bitsInBlock = 8 * sizeof(block_t);
-    const auto blockWithBit = position / bitsInBlock;
-    const auto bitPositionInBlock = position % bitsInBlock;
+    const auto blockWithBit = position / getBlockCapacity();
+    const auto bitPositionInBlock = position % getBlockCapacity();
     const auto mask = 1ULL << bitPositionInBlock;
     return std::make_tuple(blockWithBit, mask);
 }
