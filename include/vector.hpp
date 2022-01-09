@@ -150,6 +150,7 @@ public:
     vector(size_type count, bool value = false);
     vector(const vector& other);
     constexpr vector& operator=(const vector& other);
+    constexpr vector(vector&& other) noexcept;
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference operator[](size_type pos);
@@ -499,6 +500,16 @@ constexpr vector<bool>& vector<bool>::operator=(const vector& other)
     }
 
     return *this;
+}
+
+constexpr vector<bool>::vector(vector&& other) noexcept
+    : elem_ { other.elem_ }
+    , size_ { other.size_ }
+    , space_ { other.space_ }
+{
+    other.elem_ = nullptr;
+    other.size_ = 0;
+    other.space_ = 0;
 }
 
 constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
