@@ -480,7 +480,7 @@ vector<bool>::vector(size_type count, bool value)
 }
 
 vector<bool>::vector(const vector& other)
-    : elem_ { new block_t[getCapacityValueForAllocatedSpace(other.space_)] }
+    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(other.space_)] }
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
