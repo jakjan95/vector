@@ -148,6 +148,7 @@ public:
 
     constexpr vector() noexcept;
     vector(size_type count, bool value = false);
+    vector(const vector& other);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference operator[](size_type pos);
@@ -470,6 +471,19 @@ vector<bool>::vector(size_type count, bool value)
     std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(count), block_t {});
     for (size_type i = 0; i < count; ++i) {
         setValueAtPosition(i, value);
+    }
+}
+
+vector<bool>::vector(const vector& other)
+    : elem_ { new block_t[getCapacityValueForAllocatedSpace(other.space_)] }
+    , size_ { other.size_ }
+    , space_ { other.space_ }
+{
+    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
+    for (size_type i = 0; i < size(); ++i) {
+        const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
+        const auto value = !!(other.elem_[blockWithBit] & mask);
+        elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
     }
 }
 
