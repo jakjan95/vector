@@ -997,7 +997,7 @@ TEST_F(VectorBoolTest, InitializerListConstructorShouldConstructBoolVectorByUsin
     EXPECT_EQ(vec.capacity(), expectedVectorCapacity);
 
     std::size_t index = 0;
-    for (const auto el : initializerLst) {
+    for (const auto& el : initializerLst) {
         EXPECT_EQ(vec[index++], el) << index;
     }
 }
