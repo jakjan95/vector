@@ -168,6 +168,7 @@ public:
     constexpr void push_back(const value_type& value);
     constexpr void pop_back();
     constexpr void resize( size_type count, const value_type& value = {});
+    constexpr void flip();
 
 private:
     block_t* elem_;
@@ -614,6 +615,14 @@ constexpr void vector<bool>::push_back(const value_type& value)
 constexpr void vector<bool>::pop_back()
 {
     setValueAtPosition(size_--, false);
+}
+
+constexpr void vector<bool>::flip()
+{
+    for (size_type i = 0; i < size(); ++i) {
+        const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
+        elem_[blockWithBit] ^= mask;
+    }
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const

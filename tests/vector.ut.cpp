@@ -1048,3 +1048,15 @@ TEST_F(VectorBoolTest, PopBackShouldRemoveLastElementOfBoolVectorAndDecreaseSize
     EXPECT_EQ(vec.size(), vectorSizeAfterPopBack);
     EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
 }
+
+TEST_F(VectorBoolTest, FlipShouldReplacesAllBoolVectorBoolsWithsItsOppositeValue)
+{
+    my_vec::vector<bool> vec = { true, false, true, false };
+    my_vec::vector<bool> expectedVec = { false, true, false, true };
+
+    vec.flip();
+
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], expectedVec[i]);
+    }
+}
