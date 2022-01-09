@@ -531,6 +531,7 @@ vector<bool>::vector(std::initializer_list<bool> init)
     , size_ { init.size() }
     , space_ { getCapacityValueForAllocatedSpace(init.size()) }
 {
+    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
     size_type arrIndex = 0;
     for (const auto& el : init) {
         const auto [blockWithBit, mask] = getBlockWithBitAndMask(arrIndex++);
