@@ -1001,3 +1001,21 @@ TEST_F(VectorBoolTest, InitializerListConstructorShouldConstructBoolVectorByUsin
         EXPECT_EQ(vec[index++], el) << index;
     }
 }
+
+TEST_F(VectorBoolTest, InitializerListAssignmentShouldCopyContentOfGivenInitializerListToBoolVector)
+{
+    const auto initializerLst = { true, false, true, false };
+    auto vec = makeEmptyBoolVector();
+    EXPECT_TRUE(vec.empty());
+
+    vec = initializerLst;
+
+    EXPECT_EQ(vec.size(), initializerLst.size());
+    const auto expectedVectorCapacity = getExpectedCapacityForVectorSize(initializerLst.size());
+    EXPECT_EQ(vec.capacity(), expectedVectorCapacity);
+
+    std::size_t index = 0;
+    for (const auto& el : initializerLst) {
+        EXPECT_EQ(vec[index++], el);
+    }
+}
