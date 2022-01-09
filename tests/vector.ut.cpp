@@ -986,3 +986,18 @@ TEST_F(VectorBoolTest, MoveAssignmentShouldMoveDataFromGivenBoolVector)
         EXPECT_EQ(newBoolValue, vec2[i]);
     }
 }
+
+TEST_F(VectorBoolTest, InitializerListConstructorShouldConstructBoolVectorByUsingContentOfGivenInitializerList)
+{
+    const auto initializerLst = { true, false, true, false };
+    my_vec::vector<bool> vec(initializerLst);
+
+    EXPECT_EQ(vec.size(), initializerLst.size());
+    const auto expectedVectorCapacity = getExpectedCapacityForVectorSize(initializerLst.size());
+    EXPECT_EQ(vec.capacity(), expectedVectorCapacity);
+
+    std::size_t index = 0;
+    for (const auto el : initializerLst) {
+        EXPECT_EQ(vec[index++], el) << index;
+    }
+}

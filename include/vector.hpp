@@ -152,6 +152,7 @@ public:
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
     constexpr vector& operator=(vector&& other) noexcept;
+    vector(std::initializer_list<bool> init);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference operator[](size_type pos);
@@ -522,6 +523,18 @@ constexpr vector<bool>& vector<bool>::operator=(vector&& other) noexcept
     other.size_ = 0;
     other.space_ = 0;
     return *this;
+}
+
+vector<bool>::vector(std::initializer_list<bool> init)
+    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(init.size())] }
+    , size_ { init.size() }
+    , space_ { getCapacityValueForAllocatedSpace(init.size()) }
+{
+    size_type arrIndex = 0;
+    for (const auto& el : init) {
+        const auto [blockWithBit, mask] = getBlockWithBitAndMask(arrIndex++);
+        elem_[blockWithBit] ^= (-el ^ elem_[blockWithBit]) & mask;
+    }
 }
 
 constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
