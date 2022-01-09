@@ -164,6 +164,7 @@ public:
     constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
 
+    void clear() noexcept;
     constexpr void push_back(const value_type& value);
     constexpr void resize( size_type count, const value_type& value = {});
 
@@ -591,6 +592,12 @@ constexpr void vector<bool>::resize(size_type count, const value_type& value)
         }
     }
     size_ = count;
+}
+
+void vector<bool>::clear() noexcept
+{
+    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(size_), block_t {});
+    size_ = 0;
 }
 
 constexpr void vector<bool>::push_back(const value_type& value)

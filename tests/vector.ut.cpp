@@ -1019,3 +1019,19 @@ TEST_F(VectorBoolTest, InitializerListAssignmentShouldCopyContentOfGivenInitiali
         EXPECT_EQ(vec[index++], el);
     }
 }
+
+TEST_F(VectorBoolTest, ClearShouldErasesAllElementsFromBoolVector)
+{
+    constexpr auto boolVecSize = baseCapacityForBoolVector + 1;
+    constexpr auto boolVecCapacity = 2 * baseCapacityForBoolVector;
+
+    auto vec = makeBoolVectorWithSizeAndCapacity(boolVecSize, boolVecCapacity, newBoolValue);
+    EXPECT_EQ(vec.size(), boolVecSize);
+    EXPECT_EQ(vec.capacity(), boolVecCapacity);
+
+    vec.clear();
+
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec.capacity(), boolVecCapacity);
+}
