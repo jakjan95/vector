@@ -927,3 +927,23 @@ TEST_F(VectorBoolTest, CopyConstructorShouldCreateNewBoolVectorByCopyingGiven)
         EXPECT_EQ(vec[i], vec2[i]);
     }
 }
+
+TEST_F(VectorBoolTest, CopyAssignmentShouldCopyGivenVectorToBoolVector)
+{
+    constexpr auto boolVecSize = baseCapacityForBoolVector + 1;
+    constexpr auto boolVecCapacity = 2 * baseCapacityForBoolVector;
+
+    auto vec = makeBoolVectorWithSizeAndCapacity(boolVecSize, boolVecCapacity, newBoolValue);
+    my_vec::vector<bool> vec2;
+
+    vec2 = vec;
+
+    EXPECT_EQ(vec2.size(), boolVecSize);
+    EXPECT_EQ(vec2.capacity(), boolVecCapacity);
+    EXPECT_EQ(vec.size(), vec2.size());
+    EXPECT_EQ(vec.capacity(), vec2.capacity());
+
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], vec2[i]);
+    }
+}

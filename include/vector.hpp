@@ -149,6 +149,7 @@ public:
     constexpr vector() noexcept;
     vector(size_type count, bool value = false);
     vector(const vector& other);
+    constexpr vector& operator=(const vector& other);
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference operator[](size_type pos);
@@ -485,6 +486,19 @@ vector<bool>::vector(const vector& other)
         const auto value = !!(other.elem_[blockWithBit] & mask);
         elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
     }
+}
+
+constexpr vector<bool>& vector<bool>::operator=(const vector& other)
+{
+    reserve(other.space_);
+    size_ = other.size_;
+    for (size_type i = 0; i < size(); ++i) {
+        const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
+        const auto value = !!(other.elem_[blockWithBit] & mask);
+        elem_[blockWithBit] ^= (-value ^ elem_[blockWithBit]) & mask;
+    }
+
+    return *this;
 }
 
 constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
