@@ -1035,3 +1035,16 @@ TEST_F(VectorBoolTest, ClearShouldErasesAllElementsFromBoolVector)
     EXPECT_TRUE(vec.empty());
     EXPECT_EQ(vec.capacity(), boolVecCapacity);
 }
+
+TEST_F(VectorBoolTest, PopBackShouldRemoveLastElementOfBoolVectorAndDecreaseSize)
+{
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize, newBoolValue);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+
+    const auto vectorSizeAfterPopBack = vec.size() - 1;
+    vec.pop_back();
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterPopBack);
+    EXPECT_EQ(vec.capacity(), baseCapacityForBoolVector);
+}

@@ -166,6 +166,7 @@ public:
 
     void clear() noexcept;
     constexpr void push_back(const value_type& value);
+    constexpr void pop_back();
     constexpr void resize( size_type count, const value_type& value = {});
 
 private:
@@ -608,6 +609,11 @@ constexpr void vector<bool>::push_back(const value_type& value)
         reserve(2 * capacity());
     }
     setValueAtPosition(size_++, value);
+}
+
+constexpr void vector<bool>::pop_back()
+{
+    setValueAtPosition(size_--, false);
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
