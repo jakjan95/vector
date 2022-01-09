@@ -966,3 +966,23 @@ TEST_F(VectorBoolTest, MoveConstructorShouldConstructBoolVectorByMovingContentOf
         EXPECT_EQ(newBoolValue, vec2[i]);
     }
 }
+
+TEST_F(VectorBoolTest, MoveAssignmentShouldMoveDataFromGivenBoolVector)
+{
+    constexpr auto boolVecSize = baseCapacityForBoolVector + 1;
+    constexpr auto boolVecCapacity = 2 * baseCapacityForBoolVector;
+
+    auto vec = makeBoolVectorWithSizeAndCapacity(boolVecSize, boolVecCapacity, newBoolValue);
+    my_vec::vector<bool> vec2;
+
+    vec2 = std::move(vec);
+
+    EXPECT_TRUE(vec.empty());
+    EXPECT_EQ(vec.capacity(), 0);
+    EXPECT_EQ(vec2.size(), boolVecSize);
+    EXPECT_EQ(vec2.capacity(), boolVecCapacity);
+
+    for (std::size_t i = 0; i < vec2.size(); ++i) {
+        EXPECT_EQ(newBoolValue, vec2[i]);
+    }
+}
