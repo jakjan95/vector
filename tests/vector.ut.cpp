@@ -7,7 +7,7 @@
 
 constexpr std::size_t vectorSize = 3;
 constexpr int defaultValue = 0;
-constexpr std::size_t defaultContainerCapacity = 8;
+constexpr std::size_t defaultContainerCapacity = 1;
 constexpr int newValue = 5;
 constexpr std::size_t vectorCapacity = 6;
 constexpr int valueToInsert = 42;

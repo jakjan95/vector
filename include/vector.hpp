@@ -80,7 +80,7 @@ private:
     T* elem_;
     size_type size_;
     size_type space_;
-    const size_type defaultContainerCapacity_ = 8;
+    constexpr static size_type defaultContainerCapacity_ = 1;
 };
 
 
