@@ -156,6 +156,8 @@ public:
     constexpr vector& operator=(std::initializer_list<bool> ilist);
     ~vector() noexcept { delete[] elem_; }
 
+    constexpr reference at(size_type pos);
+    constexpr const_reference at(size_type pos) const;
     constexpr reference operator[](size_type pos);
     constexpr const_reference operator[](size_type pos) const;
 
@@ -554,6 +556,24 @@ constexpr vector<bool>& vector<bool>::operator=(std::initializer_list<bool> ilis
         elem_[blockWithBit] ^= (-el ^ elem_[blockWithBit]) & mask;
     }
     return *this;
+}
+
+constexpr vector<bool>::reference vector<bool>::at(size_type pos)
+{
+    if (pos >= size()) {
+        throw std::out_of_range { "Position not within range of vector" };
+    }
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(pos);
+    return reference(elem_[blockWithBit], mask);
+}
+
+constexpr vector<bool>::const_reference vector<bool>::at(size_type pos) const
+{
+    if (pos >= size()) {
+        throw std::out_of_range { "Position not within range of vector" };
+    }
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(pos);
+    return reference(elem_[blockWithBit], mask);
 }
 
 constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)

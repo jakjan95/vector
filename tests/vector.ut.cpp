@@ -1060,3 +1060,22 @@ TEST_F(VectorBoolTest, FlipShouldReplacesAllBoolVectorBoolsWithsItsOppositeValue
         EXPECT_EQ(vec[i], expectedVec[i]);
     }
 }
+
+TEST_F(VectorBoolTest, AtShouldReturnReferenceToElementAtSpecificPositon)
+{
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
+    EXPECT_EQ(vec.at(0), boolDefaultValue);
+
+    vec.at(0) = newBoolValue;
+
+    EXPECT_EQ(vec.at(0), newBoolValue);
+}
+
+TEST_F(VectorBoolTest, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
+{
+    constexpr std::size_t invalidPosition = 10;
+
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
+
+    EXPECT_THROW(vec.at(invalidPosition), std::out_of_range);
+}
