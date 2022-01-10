@@ -1132,3 +1132,15 @@ TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenContainers)
         EXPECT_EQ(secondVector[i], valueInFirstVector);
     }
 }
+
+TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenGivenReferencesOfBoolVector)
+{
+    my_vec::vector<bool> vec = { true, false, true };
+    my_vec::vector<bool> expectedVec = { false, true, true};
+
+    vec.swap(vec[0], vec[1]);
+
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], expectedVec[i])<<"> vec[i]=="<<vec[i]<<" expectedVec[i]=="<<expectedVec[i]<<"  i=="<<i<<'\n';
+    }
+}

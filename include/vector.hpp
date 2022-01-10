@@ -120,8 +120,7 @@ public:
 
         constexpr reference& operator=(const reference& x) noexcept
         {
-            value_ = bool(x);
-            return *this;
+            return *this = bool(x);
         }
 
         constexpr operator bool() const noexcept
@@ -177,6 +176,7 @@ public:
     constexpr void swap(vector& other) noexcept;
 
     constexpr void flip();
+    static void swap(reference x, reference y);
 
 private:
     block_t* elem_;
@@ -688,6 +688,13 @@ constexpr void vector<bool>::flip()
         const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
         elem_[blockWithBit] ^= mask;
     }
+}
+
+void vector<bool>::swap(reference x, reference y)
+{
+    bool tmp = x;
+    x = y;
+    y = tmp;
 }
 
 constexpr inline vector<bool>::size_type vector<bool>::getNumberOfBlocksTypeToAllocateSpace(size_type count) const
