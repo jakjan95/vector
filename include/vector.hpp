@@ -25,7 +25,7 @@ public:
     using difference_type = std::ptrdiff_t;
 
     constexpr vector() noexcept;
-    explicit vector(size_type count, const T& value = T());
+    constexpr explicit vector(size_type count, const T& value = T());
     constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
@@ -57,10 +57,10 @@ public:
     reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
     const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
 
-    bool empty() const noexcept { return begin() == end(); }
-    size_type size() const { return size_; }
-    void reserve (size_type new_cap);
-    size_type capacity() const { return space_; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return begin() == end(); }
+    constexpr size_type size() const noexcept { return size_; }
+    constexpr void reserve(size_type new_cap);
+    constexpr size_type capacity() const noexcept { return space_; }
     constexpr void shrink_to_fit();
 
     constexpr void clear() noexcept;
@@ -68,12 +68,12 @@ public:
     template <typename... Args>
     constexpr iterator emplace(iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
-    void push_back(const T& value);
-    void push_back(T&& value);
+    constexpr void push_back(const T& value);
+    constexpr void push_back(T&& value);
     template <typename... Args>
     constexpr reference emplace_back(Args&&... args);
     constexpr void pop_back();
-    void resize(size_type count, T value = T());
+    constexpr void resize(size_type count, T value = T());
     constexpr void swap(vector& other) noexcept;
 
 private:
@@ -176,7 +176,7 @@ public:
     constexpr void swap(vector& other) noexcept;
 
     constexpr void flip();
-    static void swap(reference x, reference y);
+    constexpr static void swap(reference x, reference y);
 
 private:
     block_t* elem_;
@@ -203,7 +203,7 @@ constexpr vector<T>::vector() noexcept
 }
 
 template <typename T>
-vector<T>::vector(size_type count, const T& value)
+constexpr vector<T>::vector(size_type count, const T& value)
     : elem_ { new T[count] }
     , size_ { count }
     , space_ { count }
@@ -319,7 +319,7 @@ constexpr typename vector<T>::const_reference vector<T>::at(size_type pos) const
 }
 
 template <typename T>
-void vector<T>::reserve(size_type new_cap)
+constexpr void vector<T>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
         T* tmp = new T[new_cap];
@@ -398,7 +398,7 @@ constexpr typename vector<T>::iterator vector<T>::erase(const_iterator pos)
 }
 
 template <typename T>
-void vector<T>::push_back(const T& value)
+constexpr void vector<T>::push_back(const T& value)
 {
     if(capacity() == 0){
         reserve(defaultContainerCapacity_);
@@ -410,7 +410,7 @@ void vector<T>::push_back(const T& value)
 }
 
 template <typename T>
-void vector<T>::push_back(T&& value)
+constexpr void vector<T>::push_back(T&& value)
 {
     if(capacity() == 0){
         reserve(defaultContainerCapacity_);
@@ -441,7 +441,7 @@ constexpr void vector<T>::pop_back()
 }
 
 template <typename T>
-void vector<T>::resize(size_type count, T value)
+constexpr void vector<T>::resize(size_type count, T value)
 {
     reserve(count);
     if (count > size()) {
@@ -690,7 +690,7 @@ constexpr void vector<bool>::flip()
     }
 }
 
-void vector<bool>::swap(reference x, reference y)
+constexpr void vector<bool>::swap(reference x, reference y)
 {
     bool tmp = x;
     x = y;
