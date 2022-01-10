@@ -160,6 +160,8 @@ public:
     constexpr const_reference at(size_type pos) const;
     constexpr reference operator[](size_type pos);
     constexpr const_reference operator[](size_type pos) const;
+    constexpr reference front();
+    constexpr const_reference front() const;
 
     [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
     constexpr size_type size() const noexcept { return size_; }
@@ -585,6 +587,18 @@ constexpr vector<bool>::reference vector<bool>::operator[](size_type pos)
 constexpr vector<bool>::const_reference vector<bool>::operator[](size_type pos) const
 {
     const auto [blockWithBit, mask] = getBlockWithBitAndMask(pos);
+    return reference(elem_[blockWithBit], mask);
+}
+
+constexpr vector<bool>::reference vector<bool>::front()
+{
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(0);
+    return reference(elem_[blockWithBit], mask);
+}
+
+constexpr vector<bool>::const_reference vector<bool>::front() const
+{
+    const auto [blockWithBit, mask] = getBlockWithBitAndMask(0);
     return reference(elem_[blockWithBit], mask);
 }
 

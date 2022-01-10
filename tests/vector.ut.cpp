@@ -1079,3 +1079,15 @@ TEST_F(VectorBoolTest, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfConta
 
     EXPECT_THROW(vec.at(invalidPosition), std::out_of_range);
 }
+
+TEST_F(VectorBoolTest, FrontShouldReturnReferenceToFirstElementInBoolVector)
+{
+    constexpr std::size_t firstElementIndex = 0;
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
+    EXPECT_EQ(vec[firstElementIndex], boolDefaultValue);
+
+    vec.front() = newBoolValue;
+
+    EXPECT_EQ(vec[firstElementIndex], newBoolValue);
+    EXPECT_EQ(vec[firstElementIndex], vec.front());
+}
