@@ -174,6 +174,8 @@ public:
     constexpr void push_back(const value_type& value);
     constexpr void pop_back();
     constexpr void resize( size_type count, const value_type& value = {});
+    constexpr void swap(vector& other) noexcept;
+
     constexpr void flip();
 
 private:
@@ -663,6 +665,21 @@ constexpr void vector<bool>::push_back(const value_type& value)
 constexpr void vector<bool>::pop_back()
 {
     setValueAtPosition(size_--, false);
+}
+
+constexpr void vector<bool>::swap(vector& other) noexcept
+{
+    block_t* tmpElem = other.elem_;
+    size_type tmpSize = other.size_;
+    size_type tmpSpace = other.space_;
+
+    other.elem_ = elem_;
+    other.size_ = size_;
+    other.space_ = space_;
+
+    elem_ = tmpElem;
+    size_ = tmpSize;
+    space_ = tmpSpace;
 }
 
 constexpr void vector<bool>::flip()

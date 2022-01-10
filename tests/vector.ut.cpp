@@ -1103,3 +1103,32 @@ TEST_F(VectorBoolTest, BackShouldReturnReferenceToLastElementInContainer)
     EXPECT_EQ(vec[lastElementIndex], newBoolValue);
     EXPECT_EQ(vec[lastElementIndex], vec.back());
 }
+
+TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenContainers)
+{
+    constexpr auto valueInFirstVector = true;
+    constexpr auto firstVectorSize = baseCapacityForBoolVector + 1;
+    constexpr auto firstVectorCapacity = 2 * baseCapacityForBoolVector;
+    auto firstVector = makeBoolVectorWithSizeAndCapacity(firstVectorSize, firstVectorCapacity, valueInFirstVector);
+
+    constexpr auto valueInSecondVector = false;
+    constexpr auto secondVectorSize = 2 * baseCapacityForBoolVector;
+    constexpr auto secondVectorCapacity = 3 * baseCapacityForBoolVector;
+    auto secondVector = makeBoolVectorWithSizeAndCapacity(secondVectorSize, secondVectorCapacity, valueInSecondVector);
+
+    firstVector.swap(secondVector);
+
+    EXPECT_EQ(firstVector.size(), secondVectorSize);
+    EXPECT_EQ(firstVector.capacity(), secondVectorCapacity);
+
+    EXPECT_EQ(secondVector.size(), firstVectorSize);
+    EXPECT_EQ(secondVector.capacity(), firstVectorCapacity);
+
+    for (std::size_t i = 0; i < firstVector.size(); ++i) {
+        EXPECT_EQ(firstVector[i], valueInSecondVector);
+    }
+
+    for (std::size_t i = 0; i < secondVector.size(); ++i) {
+        EXPECT_EQ(secondVector[i], valueInFirstVector);
+    }
+}
