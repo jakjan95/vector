@@ -817,7 +817,7 @@ TEST_F(VectorBoolTest, ResizeShouldResizesBoolVectorToContainCountElements)
     }
 }
 
-TEST_F(VectorBoolTest, ResizeOfBoolVectorWithValueHigherThanCapacityShouldIncreaseCapacityOfContainer)
+TEST_F(VectorBoolTest, ResizeOfBoolVectorWithValueHigherThanCapacityShouldIncreaseCapacityOfBoolVector)
 {
     constexpr auto vectorSize = baseCapacityForBoolVector / 4;
     constexpr auto newVectorSize = baseCapacityForBoolVector + baseCapacityForBoolVector / 2;
@@ -878,7 +878,7 @@ TEST_F(VectorBoolTest, PushBackShouldAddElementAtEndOfBoolVectorAndIncrementSize
     EXPECT_EQ(newBoolValue, lastElementOfVector);
 }
 
-TEST_F(VectorBoolTest, PushBackOnEmptyBoolVectorShouldReserveSpaceAndAddElementAtEndOfContainer)
+TEST_F(VectorBoolTest, PushBackOnEmptyBoolVectorShouldReserveSpaceAndAddElementAtEndOfBoolVector)
 {
     auto vec = makeEmptyBoolVector();
     EXPECT_TRUE(vec.empty());
@@ -893,7 +893,7 @@ TEST_F(VectorBoolTest, PushBackOnEmptyBoolVectorShouldReserveSpaceAndAddElementA
     EXPECT_EQ(newBoolValue, lastElementOfVector);
 }
 
-TEST_F(VectorBoolTest, PushBackShouldAddElementAtEndOfBoolContainerWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacity)
+TEST_F(VectorBoolTest, PushBackShouldAddElementAtEndOfBoolVectorWhenSizeIsEqualToCapacityItShouldIncreaseSizeAndCapacity)
 {
     auto vec = makeBoolVectorWithSizeAndCapacity(baseCapacityForBoolVector, baseCapacityForBoolVector);
     EXPECT_EQ(vec.size(), baseCapacityForBoolVector);
@@ -1071,7 +1071,7 @@ TEST_F(VectorBoolTest, AtShouldReturnReferenceToElementAtSpecificPositon)
     EXPECT_EQ(vec.at(0), newBoolValue);
 }
 
-TEST_F(VectorBoolTest, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfContainer)
+TEST_F(VectorBoolTest, AtShouldThrowExceptionWhenPositionIsNotWithinRangeOfBoolVector)
 {
     constexpr std::size_t invalidPosition = 10;
 
@@ -1092,7 +1092,7 @@ TEST_F(VectorBoolTest, FrontShouldReturnReferenceToFirstElementInBoolVector)
     EXPECT_EQ(vec[firstElementIndex], vec.front());
 }
 
-TEST_F(VectorBoolTest, BackShouldReturnReferenceToLastElementInContainer)
+TEST_F(VectorBoolTest, BackShouldReturnReferenceToLastElementInBoolVector)
 {
     auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
     const auto lastElementIndex = vec.size() - 1;
@@ -1104,7 +1104,7 @@ TEST_F(VectorBoolTest, BackShouldReturnReferenceToLastElementInContainer)
     EXPECT_EQ(vec[lastElementIndex], vec.back());
 }
 
-TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenContainers)
+TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenBoolVectors)
 {
     constexpr auto valueInFirstVector = true;
     constexpr auto firstVectorSize = baseCapacityForBoolVector + 1;
@@ -1141,6 +1141,6 @@ TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenGivenReferencesOfBoolVect
     vec.swap(vec[0], vec[1]);
 
     for (std::size_t i = 0; i < vec.size(); ++i) {
-        EXPECT_EQ(vec[i], expectedVec[i])<<"> vec[i]=="<<vec[i]<<" expectedVec[i]=="<<expectedVec[i]<<"  i=="<<i<<'\n';
+        EXPECT_EQ(vec[i], expectedVec[i]);
     }
 }
