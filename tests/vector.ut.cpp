@@ -1091,3 +1091,15 @@ TEST_F(VectorBoolTest, FrontShouldReturnReferenceToFirstElementInBoolVector)
     EXPECT_EQ(vec[firstElementIndex], newBoolValue);
     EXPECT_EQ(vec[firstElementIndex], vec.front());
 }
+
+TEST_F(VectorBoolTest, BackShouldReturnReferenceToLastElementInContainer)
+{
+    auto vec = makeBoolVectorWithSizeAndDefaultCapacity(vectorSize);
+    const auto lastElementIndex = vec.size() - 1;
+    EXPECT_EQ(vec[lastElementIndex], boolDefaultValue);
+
+    vec.back() = newBoolValue;
+
+    EXPECT_EQ(vec[lastElementIndex], newBoolValue);
+    EXPECT_EQ(vec[lastElementIndex], vec.back());
+}
