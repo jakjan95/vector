@@ -57,7 +57,7 @@ public:
     reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
     const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return begin() == end(); }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
     constexpr size_type size() const noexcept { return size_; }
     constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
