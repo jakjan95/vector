@@ -8,9 +8,13 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@master
+    - name: Install and setup g++-10
+      run: |
+        sudo apt install gcc-10 g++-10
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
     - name: Create build directory
       run: mkdir build
-    - name: Compile
+    - name: Compile code
       working-directory: build
       run: |
         cmake ..
@@ -24,12 +28,17 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@master
+    - name: Install and setup g++-10
+      run: |
+        sudo apt install gcc-10 g++-10
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
+    - name: Install valgrind
+      run: sudo apt install valgrind
     - name: Create build directory
       run: mkdir build
-    - name: Compile code and install valgrind
+    - name: Compile code
       working-directory: build
       run: |
-        sudo apt install valgrind
         cmake ..
         make
     - name: Run Valgrind
