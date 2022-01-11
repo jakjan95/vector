@@ -46,8 +46,14 @@ For more use cases check **[Use Cases](main.cpp#L32)**
 ## Project Status
 Project is still in progress.
 
-To do:
-- Adding vector specialization for bool
+### TODO:
+#### **vector\<T>**:
 - Adding allocator
 - Improve allocation with placement new
 - Implementation all variations of functions(insert, emplace etc)
+
+#### **vector\<bool>**:
+- Adding Iterators
+- Adding Pointers
+- Functions using iterators(insert, emplace)
+- Comparisions == and <=>
