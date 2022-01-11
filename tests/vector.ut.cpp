@@ -714,6 +714,36 @@ TEST_F(VectorTest, SwapShouldExchangeContentBetweenContainers)
     }
 }
 
+TEST_F(VectorTest, SpaceshipOperatorShouldCompareEqualVectors)
+{
+    my_vec::vector<int> first { 1, 2, 3 };
+    my_vec::vector<int> equalToFirst { 1, 2, 3 };
+
+    EXPECT_EQ(first.size(), equalToFirst.size());
+
+    EXPECT_TRUE(first == equalToFirst);
+    EXPECT_FALSE(first != equalToFirst);
+    EXPECT_FALSE(first < equalToFirst);
+    EXPECT_TRUE(first <= equalToFirst);
+    EXPECT_FALSE(first > equalToFirst);
+    EXPECT_TRUE(first >= equalToFirst);
+}
+
+TEST_F(VectorTest, SpaceshipOperatorShouldCompareNotEqualVectors)
+{
+    my_vec::vector<int> first { 1, 2, 3 };
+    my_vec::vector<int> second { 7, 8, 9, 10 };
+
+    EXPECT_NE(first.size(), second.size());
+
+    EXPECT_FALSE(first == second);
+    EXPECT_TRUE(first != second);
+    EXPECT_TRUE(first < second);
+    EXPECT_TRUE(first <= second);
+    EXPECT_FALSE(first > second);
+    EXPECT_FALSE(first >= second);
+}
+
 TEST_F(VectorBoolTest, DefaultConstructorShouldCreateEmptyBoolVector)
 {
     my_vec::vector<bool> vec;

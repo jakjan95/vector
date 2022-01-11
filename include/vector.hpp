@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -83,6 +84,17 @@ private:
     constexpr static size_type defaultContainerCapacity_ = 1;
 };
 
+template <typename T>
+constexpr auto operator<=>(const vector<T>& rhs, const vector<T>& lhs)
+{
+    return std::lexicographical_compare_three_way(rhs.begin(), rhs.end(), lhs.begin(), lhs.end(), std::compare_three_way());
+}
+
+template <typename T>
+constexpr bool operator==(const vector<T>& lhs, const vector<T>& rhs)
+{
+    return lhs.size() == rhs.size() && std::equal(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+}
 
 /*
 * A memory space optimized specialization of vector for bools
