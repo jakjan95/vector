@@ -14,9 +14,13 @@ FetchContent_MakeAvailable(googletest)
 include_directories(include)
 include_directories(tests)
 
-set(HEADERS include/vector.hpp)
+set(HEADERS 
+  include/vector.hpp
+  include/allocator.hpp)
 
-set(TESTS tests/vector.ut.cpp)
+set(TESTS 
+  tests/allocator.ut.cpp
+  tests/vector.ut.cpp)
 
 set(FLAGS -Wall -Wextra -Werror -pedantic -Wconversion -O3)
 
