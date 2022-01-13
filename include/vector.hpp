@@ -9,8 +9,10 @@
 #include <stdexcept>
 #include <utility>
 
+#include "allocator.hpp"
+
 namespace my_vec {
-template <typename T>
+template <typename T, typename Allocator = my_alloc::allocator<T>>
 class vector {
 public:
     using value_type = T;
@@ -25,16 +27,16 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     using difference_type = std::ptrdiff_t;
 
-    constexpr vector() noexcept;
-    constexpr explicit vector(size_type count, const T& value = T());
+    constexpr vector() noexcept(noexcept(Allocator()));
+    constexpr explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator());
     constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
     constexpr vector& operator=(vector&& other) noexcept;
-    constexpr vector(std::initializer_list<T> init);
+    constexpr vector(std::initializer_list<T> init, const Allocator& alloc = Allocator());
     constexpr vector& operator=(std::initializer_list<T> ilist);
     template <class InputIt>
-    constexpr vector(InputIt first, InputIt last);
+    constexpr vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
     ~vector() noexcept { delete[] elem_; }
 
     constexpr reference at(size_type pos);
@@ -78,20 +80,21 @@ public:
     constexpr void swap(vector& other) noexcept;
 
 private:
+    Allocator alloc_;
     T* elem_;
     size_type size_;
     size_type space_;
     constexpr static size_type defaultContainerCapacity_ = 1;
 };
 
-template <typename T>
-constexpr auto operator<=>(const vector<T>& rhs, const vector<T>& lhs)
+template <typename T, typename Allocator>
+constexpr auto operator<=>(const vector<T, Allocator>& rhs, const vector<T, Allocator>& lhs)
 {
     return std::lexicographical_compare_three_way(rhs.begin(), rhs.end(), lhs.begin(), lhs.end(), std::compare_three_way());
 }
 
-template <typename T>
-constexpr bool operator==(const vector<T>& lhs, const vector<T>& rhs)
+template <typename T, typename Allocator>
+constexpr bool operator==(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs)
 {
     return lhs.size() == rhs.size() && std::equal(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 }
@@ -206,17 +209,19 @@ private:
 * Generic vector functions
 */
 
-template <typename T>
-constexpr vector<T>::vector() noexcept
-    : elem_ { nullptr }
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector() noexcept(noexcept(Allocator()))
+    : alloc_ { Allocator() }
+    , elem_ { nullptr }
     , size_ { 0 }
     , space_ { 0 }
 {
 }
 
-template <typename T>
-constexpr vector<T>::vector(size_type count, const T& value)
-    : elem_ { new T[count] }
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(size_type count, const T& value, const Allocator& alloc)
+    : alloc_ { alloc }
+    , elem_ { new T[count] }
     , size_ { count }
     , space_ { count }
 {
@@ -225,9 +230,10 @@ constexpr vector<T>::vector(size_type count, const T& value)
     }
 }
 
-template <typename T>
-constexpr vector<T>::vector(const vector<T>& other)
-    : elem_ { new T[other.space_] }
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(const vector<T, Allocator>& other)
+    : alloc_ { other.alloc_ }
+    , elem_ { new T[other.space_] }
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
@@ -236,10 +242,11 @@ constexpr vector<T>::vector(const vector<T>& other)
     }
 }
 
-template <typename T>
-constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(const vector<T, Allocator>& other)
 {
     reserve(other.space_);
+    alloc_ = other.alloc_;
     size_ = other.size_;
     space_ = other.space_;
     for (size_type i = 0; i < size(); ++i) {
@@ -248,32 +255,37 @@ constexpr vector<T>& vector<T>::operator=(const vector<T>& other)
     return *this;
 }
 
-template <typename T>
-constexpr vector<T>::vector(vector&& other) noexcept
-    : elem_ { other.elem_ }
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(vector&& other) noexcept
+    : alloc_ { other.alloc_ }
+    , elem_ { other.elem_ }
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
+    other.alloc_ = {};
     other.elem_ = nullptr;
     other.size_ = 0;
     other.space_ = 0;
 }
 
-template <typename T>
-constexpr vector<T>& vector<T>::operator=(vector&& other) noexcept
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(vector&& other) noexcept
 {
+    alloc_ = other.alloc_;
     elem_ = other.elem_;
     size_ = other.size_;
     space_ = other.space_;
+    other.alloc_ = {};
     other.elem_ = nullptr;
     other.size_ = 0;
     other.space_ = 0;
     return *this;
 }
 
-template <typename T>
-constexpr vector<T>::vector(std::initializer_list<T> init)
-    : elem_ { new T[init.size()] }
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(std::initializer_list<T> init, const Allocator& alloc)
+    : alloc_ { alloc }
+    , elem_ { new T[init.size()] }
     , size_ { init.size() }
     , space_ { init.size() }
 {
@@ -283,8 +295,8 @@ constexpr vector<T>::vector(std::initializer_list<T> init)
     }
 }
 
-template <typename T>
-constexpr vector<T>& vector<T>::operator=(std::initializer_list<T> ilist)
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(std::initializer_list<T> ilist)
 {
     clear();
     reserve(ilist.size());
@@ -299,10 +311,11 @@ constexpr vector<T>& vector<T>::operator=(std::initializer_list<T> ilist)
     return *this;
 }
 
-template <typename T>
+template <typename T, typename Allocator>
 template <class InputIt>
-constexpr vector<T>::vector(InputIt first, InputIt last)
-    : elem_ { new T[static_cast<size_type>(last - first)] }
+constexpr vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator& alloc)
+    : alloc_ { alloc }
+    , elem_ { new T[static_cast<size_type>(last - first)] }
     , size_ { static_cast<size_type>(last - first) }
     , space_ { static_cast<size_type>(last - first) }
 {
@@ -312,8 +325,8 @@ constexpr vector<T>::vector(InputIt first, InputIt last)
     }
 }
 
-template <typename T>
-constexpr typename vector<T>::reference vector<T>::at(size_type pos)
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::at(size_type pos)
 {
     if (pos >= size()) {
         throw std::out_of_range { "Position not within range of vector" };
@@ -321,8 +334,8 @@ constexpr typename vector<T>::reference vector<T>::at(size_type pos)
     return elem_[pos];
 }
 
-template <typename T>
-constexpr typename vector<T>::const_reference vector<T>::at(size_type pos) const
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::const_reference vector<T, Allocator>::at(size_type pos) const
 {
     if (pos >= size()) {
         throw std::out_of_range { "Position not within range of vector" };
@@ -330,8 +343,8 @@ constexpr typename vector<T>::const_reference vector<T>::at(size_type pos) const
     return elem_[pos];
 }
 
-template <typename T>
-constexpr void vector<T>::reserve(size_type new_cap)
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
         T* tmp = new T[new_cap];
@@ -345,22 +358,22 @@ constexpr void vector<T>::reserve(size_type new_cap)
     }
 }
 
-template <typename T>
-constexpr void vector<T>::shrink_to_fit()
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::shrink_to_fit()
 {
     reserve(size_);
     space_ = size_;
 }
 
-template <typename T>
-constexpr void vector<T>::clear() noexcept
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::clear() noexcept
 {
     std::destroy(elem_, elem_ + size_);
     size_ = 0;
 }
 
-template <typename T>
-constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& value)
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(iterator pos, const T& value)
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
@@ -377,9 +390,9 @@ constexpr typename vector<T>::iterator vector<T>::insert(iterator pos, const T& 
     return pos;
 }
 
-template <typename T>
+template <typename T, typename Allocator>
 template <typename... Args>
-constexpr typename vector<T>::iterator vector<T>::emplace(iterator pos, Args&&... args)
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(iterator pos, Args&&... args)
 {
     if (size() == capacity()) {
         auto posDistance = static_cast<size_type>(pos - elem_);
@@ -396,8 +409,8 @@ constexpr typename vector<T>::iterator vector<T>::emplace(iterator pos, Args&&..
     return pos;
 }
 
-template <typename T>
-constexpr typename vector<T>::iterator vector<T>::erase(const_iterator pos)
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(const_iterator pos)
 {
     (*pos).~T();
     size_--;
@@ -409,8 +422,8 @@ constexpr typename vector<T>::iterator vector<T>::erase(const_iterator pos)
     return elem_ + posDistance;
 }
 
-template <typename T>
-constexpr void vector<T>::push_back(const T& value)
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::push_back(const T& value)
 {
     if(capacity() == 0){
         reserve(defaultContainerCapacity_);
@@ -421,8 +434,8 @@ constexpr void vector<T>::push_back(const T& value)
     elem_[size_++] = value;
 }
 
-template <typename T>
-constexpr void vector<T>::push_back(T&& value)
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::push_back(T&& value)
 {
     if(capacity() == 0){
         reserve(defaultContainerCapacity_);
@@ -433,9 +446,9 @@ constexpr void vector<T>::push_back(T&& value)
     elem_[size_++] = std::move(value);
 }
 
-template <typename T>
+template <typename T, typename Allocator>
 template <typename... Args>
-constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
+constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::emplace_back(Args&&... args)
 {
     if(capacity() == 0){
         reserve(defaultContainerCapacity_);
@@ -446,14 +459,14 @@ constexpr typename vector<T>::reference vector<T>::emplace_back(Args&&... args)
     return elem_[size_++] = T(std::forward<Args>(args)...);
 }
 
-template <typename T>
-constexpr void vector<T>::pop_back()
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::pop_back()
 {
     elem_[--size_].~T();
 }
 
-template <typename T>
-constexpr void vector<T>::resize(size_type count, T value)
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::resize(size_type count, T value)
 {
     reserve(count);
     if (count > size()) {
@@ -464,8 +477,8 @@ constexpr void vector<T>::resize(size_type count, T value)
     size_ = count;
 }
 
-template <typename T>
-constexpr void vector<T>::swap(vector& other) noexcept
+template <typename T, typename Allocator>
+constexpr void vector<T, Allocator>::swap(vector& other) noexcept
 {
     T* tmpElem = other.elem_;
     size_type tmpSize = other.size_;
