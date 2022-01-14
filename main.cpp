@@ -368,7 +368,9 @@ void vectorPushBackExample()
     my_vec::vector<std::string> letters;
 
     letters.push_back("abc");
+
     std::string s = "def";
+
     letters.push_back(std::move(s));
 
     std::cout << "vector holds: ";
@@ -391,6 +393,9 @@ struct President {
     {
         std::cout << "I am being constructed.\n";
     }
+
+    President(President&) = default;
+
     President(President&& other)
         : name(std::move(other.name))
         , country(std::move(other.country))
@@ -398,6 +403,7 @@ struct President {
     {
         std::cout << "I am being moved.\n";
     }
+
     President& operator=(const President& other) = default;
 };
 

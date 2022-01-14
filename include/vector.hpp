@@ -37,7 +37,7 @@ public:
     constexpr vector& operator=(std::initializer_list<T> ilist);
     template <class InputIt>
     constexpr vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
-    ~vector() noexcept { delete[] elem_; }
+    ~vector() noexcept { alloc_.deallocate(elem_, space_); }
 
     constexpr reference at(size_type pos);
     constexpr const_reference at(size_type pos) const;
@@ -221,25 +221,21 @@ constexpr vector<T, Allocator>::vector() noexcept(noexcept(Allocator()))
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(size_type count, const T& value, const Allocator& alloc)
     : alloc_ { alloc }
-    , elem_ { new T[count] }
+    , elem_ { alloc_.allocate(count) }
     , size_ { count }
     , space_ { count }
 {
-    for (size_type i = 0; i < count; ++i) {
-        elem_[i] = value;
-    }
+    std::uninitialized_fill_n(elem_, count, value);
 }
 
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(const vector<T, Allocator>& other)
     : alloc_ { other.alloc_ }
-    , elem_ { new T[other.space_] }
+    , elem_ { alloc_.allocate(other.space_) }
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
-    for (size_type i = 0; i < size(); ++i) {
-        elem_[i] = other.elem_[i];
-    }
+    std::uninitialized_copy_n(other.elem_, size_, elem_);
 }
 
 template <typename T, typename Allocator>
@@ -249,9 +245,7 @@ constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(const vector<T, 
     alloc_ = other.alloc_;
     size_ = other.size_;
     space_ = other.space_;
-    for (size_type i = 0; i < size(); ++i) {
-        elem_[i] = other.elem_[i];
-    }
+    std::uninitialized_copy_n(other.elem_, size_, elem_);
     return *this;
 }
 
@@ -285,14 +279,11 @@ constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(vector&& other) 
 template <typename T, typename Allocator>
 constexpr vector<T, Allocator>::vector(std::initializer_list<T> init, const Allocator& alloc)
     : alloc_ { alloc }
-    , elem_ { new T[init.size()] }
+    , elem_ { alloc_.allocate(init.size()) }
     , size_ { init.size() }
     , space_ { init.size() }
 {
-    size_type arrIndex = 0;
-    for (const auto& el : init) {
-        elem_[arrIndex++] = el;
-    }
+    std::uninitialized_copy(init.begin(), init.end(), elem_);
 }
 
 template <typename T, typename Allocator>
@@ -302,12 +293,7 @@ constexpr vector<T, Allocator>& vector<T, Allocator>::operator=(std::initializer
     reserve(ilist.size());
     size_ = ilist.size();
     space_ = ilist.size();
-
-    size_type arrIndex = 0;
-    for (const auto& el : ilist) {
-        elem_[arrIndex++] = el;
-    }
-
+    std::uninitialized_copy(ilist.begin(), ilist.end(), elem_);
     return *this;
 }
 
@@ -315,14 +301,11 @@ template <typename T, typename Allocator>
 template <class InputIt>
 constexpr vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator& alloc)
     : alloc_ { alloc }
-    , elem_ { new T[static_cast<size_type>(last - first)] }
+    , elem_ { alloc_.allocate(static_cast<size_type>(last - first)) }
     , size_ { static_cast<size_type>(last - first) }
     , space_ { static_cast<size_type>(last - first) }
 {
-    size_type arrIndex = 0;
-    for (auto it = first; it != last; ++it) {
-        elem_[arrIndex++] = *it;
-    }
+    std::uninitialized_copy(first, last, elem_);
 }
 
 template <typename T, typename Allocator>
@@ -347,11 +330,11 @@ template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
-        T* tmp = new T[new_cap];
-        for (size_type i = 0; i < size(); ++i) {
-            tmp[i] = elem_[i];
-        }
-        delete[] elem_;
+        T* tmp = alloc_.allocate(new_cap);
+        std::uninitialized_copy_n(elem_, size_, tmp);
+
+        std::destroy_n(elem_, size_);
+        alloc_.deallocate(elem_, space_);
 
         elem_ = tmp;
         space_ = new_cap;
@@ -405,7 +388,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(
         *itCurrent = *itPrevious;
     }
 
-    *pos = T(std::forward<Args>(args)...);
+    std::construct_at(&elem_[pos - elem_], std::forward<Args>(args)...);
     return pos;
 }
 
@@ -456,7 +439,8 @@ constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::emplace
     else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
-    return elem_[size_++] = T(std::forward<Args>(args)...);
+    std::construct_at(&elem_[size_], std::forward<Args>(args)...);
+    return elem_[size_++];
 }
 
 template <typename T, typename Allocator>
@@ -470,9 +454,7 @@ constexpr void vector<T, Allocator>::resize(size_type count, T value)
 {
     reserve(count);
     if (count > size()) {
-        for (size_type i = size(); i < count; ++i) {
-            elem_[i] = value;
-        }
+        std::uninitialized_fill(elem_ + size_, elem_ + count, value);
     }
     size_ = count;
 }
