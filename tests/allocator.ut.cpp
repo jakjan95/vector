@@ -9,7 +9,8 @@ constexpr int baseTestValue = 42;
 
 class ClassToTest {
 public:
-    ClassToTest() = delete;
+    ClassToTest() = default;
+
     ClassToTest(int testValue)
         : testValue_ { testValue + counter_++ }
     {

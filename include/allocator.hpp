@@ -22,11 +22,12 @@ struct allocator {
 template <typename T>
 [[nodiscard]] constexpr T* allocator<T>::allocate(size_type n)
 {
-    return reinterpret_cast<T*>(new char[n * sizeof(T)]);
+    return new T[n];
 }
+
 template <typename T>
 constexpr void allocator<T>::deallocate(T* p, [[maybe_unused]] size_type n)
 {
-    delete[] reinterpret_cast<char*>(p);
+    delete[] p;
 }
 }
