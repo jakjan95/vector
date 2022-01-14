@@ -1166,7 +1166,7 @@ TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenBoolVectors)
 TEST_F(VectorBoolTest, SwapShouldExchangeContentBetweenGivenReferencesOfBoolVector)
 {
     my_vec::vector<bool> vec = { true, false, true };
-    my_vec::vector<bool> expectedVec = { false, true, true};
+    my_vec::vector<bool> expectedVec = { false, true, true };
 
     vec.swap(vec[0], vec[1]);
 

@@ -187,7 +187,7 @@ public:
     void clear() noexcept;
     constexpr void push_back(const value_type& value);
     constexpr void pop_back();
-    constexpr void resize( size_type count, const value_type& value = {});
+    constexpr void resize(size_type count, const value_type& value = {});
     constexpr void swap(vector& other) noexcept;
 
     constexpr void flip();
@@ -200,7 +200,7 @@ private:
 
     constexpr inline size_type getNumberOfBlocksTypeToAllocateSpace(size_type count) const;
     constexpr inline size_type getCapacityValueForAllocatedSpace(size_type count) const;
-    constexpr std::tuple<size_type, size_type>  getBlockWithBitAndMask(size_type position) const;
+    constexpr std::tuple<size_type, size_type> getBlockWithBitAndMask(size_type position) const;
     constexpr void setValueAtPosition(size_type position, bool value);
     constexpr inline auto getBlockCapacity() const { return sizeof(block_t) * 8; }
 };
@@ -408,10 +408,9 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::erase(co
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::push_back(const T& value)
 {
-    if(capacity() == 0){
+    if (capacity() == 0) {
         reserve(defaultContainerCapacity_);
-    }
-    else if (size() >= capacity()) {
+    } else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     elem_[size_++] = value;
@@ -420,10 +419,9 @@ constexpr void vector<T, Allocator>::push_back(const T& value)
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::push_back(T&& value)
 {
-    if(capacity() == 0){
+    if (capacity() == 0) {
         reserve(defaultContainerCapacity_);
-    }
-    else if (size() >= capacity()) {
+    } else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     elem_[size_++] = std::move(value);
@@ -433,10 +431,9 @@ template <typename T, typename Allocator>
 template <typename... Args>
 constexpr typename vector<T, Allocator>::reference vector<T, Allocator>::emplace_back(Args&&... args)
 {
-    if(capacity() == 0){
+    if (capacity() == 0) {
         reserve(defaultContainerCapacity_);
-    }
-    else if (size() >= capacity()) {
+    } else if (size() >= capacity()) {
         reserve(2 * capacity());
     }
     std::construct_at(&elem_[size_], std::forward<Args>(args)...);
