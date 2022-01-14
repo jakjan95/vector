@@ -38,21 +38,13 @@ TEST(Allocator, AllocatorShouldAllocateMemoryToInitializeItUsingConstruct)
 
     ClassToTest* allocatedSpace = allocator.allocate(numOfElems);
 
-    //Checking state of elements after space allocation
-    int totalForAllocatedSpace = 0;
-    for (std::size_t i = 0; i != numOfElems; ++i) {
-        totalForAllocatedSpace += allocatedSpace[i].getTestValue();
-        EXPECT_NE(allocatedSpace[i].getCounter(), counterBase + i);
-    }
-    EXPECT_NE(totalForAllocatedSpace, expectedTotalForAllocatedSpace);
-
     for (std::size_t i = 0; i != numOfElems; ++i) {
         std::construct_at(&allocatedSpace[i], baseTestValue);
         EXPECT_EQ(allocatedSpace[i].getCounter(), counterBase + i);
     }
 
     //Checking state of elements after construction
-    totalForAllocatedSpace = 0;
+    int totalForAllocatedSpace = 0;
     for (std::size_t i = 0; i != numOfElems; ++i) {
         totalForAllocatedSpace += allocatedSpace[i].getTestValue();
     }
