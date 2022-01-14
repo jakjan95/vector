@@ -28,7 +28,8 @@ public:
     using difference_type = std::ptrdiff_t;
 
     constexpr vector() noexcept(noexcept(Allocator()));
-    constexpr explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator());
+    constexpr vector(size_type count, const T& value, const Allocator& alloc = Allocator());
+    constexpr explicit vector(size_type count, const Allocator& alloc = Allocator());
     constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
@@ -226,6 +227,12 @@ constexpr vector<T, Allocator>::vector(size_type count, const T& value, const Al
     , space_ { count }
 {
     std::uninitialized_fill_n(elem_, count, value);
+}
+
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::vector(size_type count, const Allocator& alloc)
+    : vector(count, T(), alloc)
+{
 }
 
 template <typename T, typename Allocator>
