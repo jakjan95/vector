@@ -38,7 +38,7 @@ public:
     constexpr vector& operator=(std::initializer_list<T> ilist);
     template <class InputIt>
     constexpr vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
-    ~vector() noexcept { alloc_.deallocate(elem_, space_); }
+    constexpr ~vector() noexcept;
 
     constexpr reference at(size_type pos);
     constexpr const_reference at(size_type pos) const;
@@ -313,6 +313,13 @@ constexpr vector<T, Allocator>::vector(InputIt first, InputIt last, const Alloca
     , space_ { static_cast<size_type>(last - first) }
 {
     std::uninitialized_copy(first, last, elem_);
+}
+
+template <typename T, typename Allocator>
+constexpr vector<T, Allocator>::~vector() noexcept
+{
+    std::destroy(elem_, elem_ + size_);
+    alloc_.deallocate(elem_, space_);
 }
 
 template <typename T, typename Allocator>
