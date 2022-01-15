@@ -423,12 +423,7 @@ constexpr void vector<T, Allocator>::push_back(const T& value)
 template <typename T, typename Allocator>
 constexpr void vector<T, Allocator>::push_back(T&& value)
 {
-    if (capacity() == 0) {
-        reserve(defaultContainerCapacity_);
-    } else if (size() >= capacity()) {
-        reserve(2 * capacity());
-    }
-    elem_[size_++] = std::move(value);
+    emplace_back(std::move(value));
 }
 
 template <typename T, typename Allocator>
