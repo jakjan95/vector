@@ -372,16 +372,14 @@ constexpr void vector<T, Allocator>::clear() noexcept
 template <typename T, typename Allocator>
 constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(iterator pos, const T& value)
 {
+    const auto posDistance = static_cast<size_type>(pos - elem_);
     if (size() == capacity()) {
-        auto posDistance = static_cast<size_type>(pos - elem_);
         reserve(capacity() == 0 ? defaultContainerCapacity_ : 2 * capacity());
         pos = elem_ + posDistance;
     }
 
+    std::uninitialized_copy(elem_ + posDistance, elem_ + size_, elem_ + posDistance + 1);
     size_++;
-    for (auto itCurrent = pos + 1, itPrevious = pos; itCurrent != elem_ + size_; ++itCurrent, ++itPrevious) {
-        *itCurrent = *itPrevious;
-    }
 
     *pos = value;
     return pos;

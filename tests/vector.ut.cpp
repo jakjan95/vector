@@ -548,6 +548,18 @@ TEST_F(VectorTest, InsertOnEmptyContainerShouldReserveSpaceAndInsertGivenValue)
     EXPECT_EQ(newValue, *lastElementOfVector);
 }
 
+TEST_F(VectorTest, InsertShouldInsertGivenStringValueBeforeBegin)
+{
+    const std::string stringValueToInsert = "insert";
+    auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity, stringValue);
+
+    const auto vectorSizeAfterInsertion = vec.size() + 1;
+    vec.insert(vec.begin(), stringValueToInsert);
+
+    EXPECT_EQ(vec.front(), stringValueToInsert);
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+}
+
 TEST_F(VectorTest, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
 {
     auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
