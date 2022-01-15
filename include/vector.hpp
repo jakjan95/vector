@@ -70,7 +70,7 @@ public:
     constexpr void clear() noexcept;
     constexpr iterator insert(iterator pos, const T& value);
     template <typename... Args>
-    constexpr iterator emplace(iterator pos, Args&&... args);
+    constexpr iterator emplace(const_iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
     constexpr void push_back(const T& value);
     constexpr void push_back(T&& value);
@@ -382,21 +382,18 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(i
 
 template <typename T, typename Allocator>
 template <typename... Args>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(iterator pos, Args&&... args)
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::emplace(const_iterator pos, Args&&... args)
 {
+    const auto posDistance = static_cast<size_type>(pos - elem_);
     if (size() == capacity()) {
-        auto posDistance = static_cast<size_type>(pos - elem_);
         reserve(capacity() == 0 ? defaultContainerCapacity_ : 2 * capacity());
         pos = elem_ + posDistance;
     }
-
+    std::uninitialized_copy(elem_ + posDistance, elem_ + size_, elem_ + posDistance + 1);
     size_++;
-    for (auto itCurrent = pos + 1, itPrevious = pos; itCurrent != elem_ + size_; ++itCurrent, ++itPrevious) {
-        *itCurrent = *itPrevious;
-    }
 
-    std::construct_at(&elem_[pos - elem_], std::forward<Args>(args)...);
-    return pos;
+    std::construct_at(&elem_[posDistance], std::forward<Args>(args)...);
+    return elem_ + posDistance;
 }
 
 template <typename T, typename Allocator>
