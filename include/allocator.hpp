@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <new>
 #include <type_traits>
 
 namespace my_alloc {
@@ -22,12 +23,12 @@ struct allocator {
 template <typename T>
 [[nodiscard]] constexpr T* allocator<T>::allocate(size_type n)
 {
-    return new T[n];
+    return static_cast<T*>(::operator new(n * sizeof(T)));
 }
 
 template <typename T>
 constexpr void allocator<T>::deallocate(T* p, [[maybe_unused]] size_type n)
 {
-    delete[] p;
+    ::operator delete(p);
 }
 }
