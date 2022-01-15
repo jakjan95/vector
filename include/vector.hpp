@@ -68,7 +68,7 @@ public:
     constexpr void shrink_to_fit();
 
     constexpr void clear() noexcept;
-    constexpr iterator insert(iterator pos, const T& value);
+    constexpr iterator insert(const_iterator pos, const T& value);
     template <typename... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
@@ -370,7 +370,7 @@ constexpr void vector<T, Allocator>::clear() noexcept
 }
 
 template <typename T, typename Allocator>
-constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(iterator pos, const T& value)
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, const T& value)
 {
     const auto posDistance = static_cast<size_type>(pos - elem_);
     if (size() == capacity()) {
@@ -381,8 +381,8 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(i
     std::uninitialized_copy(elem_ + posDistance, elem_ + size_, elem_ + posDistance + 1);
     size_++;
 
-    *pos = value;
-    return pos;
+    elem_[posDistance] = value;
+    return elem_ + posDistance;
 }
 
 template <typename T, typename Allocator>
