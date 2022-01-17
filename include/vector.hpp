@@ -69,6 +69,7 @@ public:
 
     constexpr void clear() noexcept;
     constexpr iterator insert(const_iterator pos, const T& value);
+    constexpr iterator insert(const_iterator pos, size_type count, const T& value);
     template <typename... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
@@ -383,6 +384,25 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(c
     size_++;
 
     elem_[posDistance] = value;
+    return elem_ + posDistance;
+}
+
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, size_type count, const T& value)
+{
+    const auto posDistance = static_cast<size_type>(pos - elem_);
+    if (capacity() == 0) {
+        reserve(count);
+        pos = elem_ + posDistance;
+    } else if (size_ + count >= capacity()) {
+        reserve(2 * capacity());
+        pos = elem_ + posDistance;
+    }
+
+    std::uninitialized_copy(elem_ + posDistance, elem_ + size_, elem_ + posDistance + count);
+    std::uninitialized_fill(elem_ + posDistance, elem_ + posDistance + count, value);
+
+    size_ += count;
     return elem_ + posDistance;
 }
 
