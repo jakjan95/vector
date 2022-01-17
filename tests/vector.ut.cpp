@@ -567,7 +567,7 @@ TEST_F(VectorTest, InsertShouldInsertGivenCountRangeOfValueBeforeMiddlePosition)
     EXPECT_EQ(vec.capacity(), vectorCapacity);
 
     auto middleIterator = vec.begin() + vectorSize / 2;
-    const auto numOfValuesToInsert = 5;
+    const std::size_t numOfValuesToInsert = 5;
     const auto distanceToMiddle = static_cast<std::size_t>(std::distance(vec.begin(), middleIterator));
 
     const auto vectorSizeAfterInsertion = vec.size() + numOfValuesToInsert;
@@ -593,7 +593,7 @@ TEST_F(VectorTest, InsertShouldInsertGivenCountRangeOfValueBeforeMiddlePosition)
 
 TEST_F(VectorTest, InsertShouldInsertGivenCountRangeOfValueToEmptyVector)
 {
-    const auto numOfValuesToInsert = 5;
+    const std::size_t numOfValuesToInsert = 5;
     auto vec = makeEmptyVector<int>();
     EXPECT_EQ(vec.size(), 0);
     EXPECT_EQ(vec.capacity(), 0);
