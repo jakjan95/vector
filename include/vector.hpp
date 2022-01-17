@@ -162,14 +162,14 @@ public:
     };
 
     constexpr vector() noexcept;
-    vector(size_type count, bool value = false);
-    vector(const vector& other);
+    constexpr vector(size_type count, bool value = false);
+    constexpr vector(const vector& other);
     constexpr vector& operator=(const vector& other);
     constexpr vector(vector&& other) noexcept;
     constexpr vector& operator=(vector&& other) noexcept;
-    vector(std::initializer_list<bool> init);
+    constexpr vector(std::initializer_list<bool> init);
     constexpr vector& operator=(std::initializer_list<bool> ilist);
-    ~vector() noexcept { delete[] elem_; }
+    ~vector() noexcept { alloc_.deallocate(elem_, space_); }
 
     constexpr reference at(size_type pos);
     constexpr const_reference at(size_type pos) const;
@@ -185,7 +185,7 @@ public:
     constexpr void reserve(size_type new_cap);
     constexpr size_type capacity() const noexcept { return space_; }
 
-    void clear() noexcept;
+    constexpr void clear() noexcept;
     constexpr void push_back(const value_type& value);
     constexpr void pop_back();
     constexpr void resize(size_type count, const value_type& value = {});
@@ -195,6 +195,7 @@ public:
     constexpr static void swap(reference x, reference y);
 
 private:
+    my_alloc::allocator<block_t> alloc_;
     block_t* elem_;
     size_type size_;
     size_type space_;
@@ -487,23 +488,23 @@ constexpr vector<bool>::vector() noexcept
 {
 }
 
-vector<bool>::vector(size_type count, bool value)
-    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(count)] }
+constexpr vector<bool>::vector(size_type count, bool value)
+    : elem_ { alloc_.allocate(getNumberOfBlocksTypeToAllocateSpace(count)) }
     , size_ { count }
     , space_ { getCapacityValueForAllocatedSpace(count) }
 {
-    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(count), block_t {});
+    std::uninitialized_fill_n(elem_, getNumberOfBlocksTypeToAllocateSpace(count), block_t {});
     for (size_type i = 0; i < count; ++i) {
         setValueAtPosition(i, value);
     }
 }
 
-vector<bool>::vector(const vector& other)
-    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(other.space_)] }
+constexpr vector<bool>::vector(const vector& other)
+    : elem_ { alloc_.allocate(getNumberOfBlocksTypeToAllocateSpace(other.space_)) }
     , size_ { other.size_ }
     , space_ { other.space_ }
 {
-    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
+    std::uninitialized_fill_n(elem_, getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
     for (size_type i = 0; i < size(); ++i) {
         const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
         const auto value = !!(other.elem_[blockWithBit] & mask);
@@ -545,12 +546,12 @@ constexpr vector<bool>& vector<bool>::operator=(vector&& other) noexcept
     return *this;
 }
 
-vector<bool>::vector(std::initializer_list<bool> init)
-    : elem_ { new block_t[getNumberOfBlocksTypeToAllocateSpace(init.size())] }
+constexpr vector<bool>::vector(std::initializer_list<bool> init)
+    : elem_ { alloc_.allocate(getNumberOfBlocksTypeToAllocateSpace(init.size())) }
     , size_ { init.size() }
     , space_ { getCapacityValueForAllocatedSpace(init.size()) }
 {
-    std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
+    std::uninitialized_fill_n(elem_, getNumberOfBlocksTypeToAllocateSpace(space_), block_t {});
     size_type arrIndex = 0;
     for (const auto& el : init) {
         const auto [blockWithBit, mask] = getBlockWithBitAndMask(arrIndex++);
@@ -629,15 +630,15 @@ constexpr vector<bool>::const_reference vector<bool>::back() const
 constexpr void vector<bool>::reserve(size_type new_cap)
 {
     if (new_cap > capacity()) {
-        block_t* tmp = new block_t[getNumberOfBlocksTypeToAllocateSpace(new_cap)];
-        std::fill(tmp, tmp + getNumberOfBlocksTypeToAllocateSpace(new_cap), block_t {});
+        block_t* tmp = alloc_.allocate(getNumberOfBlocksTypeToAllocateSpace(new_cap));
+        std::uninitialized_fill_n(tmp, getNumberOfBlocksTypeToAllocateSpace(new_cap), block_t {});
         for (size_type i = 0; i < size(); ++i) {
             const auto [blockWithBit, mask] = getBlockWithBitAndMask(i);
             const auto value = !!(elem_[blockWithBit] & mask);
             tmp[blockWithBit] ^= (-value ^ tmp[blockWithBit]) & mask;
         }
 
-        delete[] elem_;
+        alloc_.deallocate(elem_, space_);
         elem_ = tmp;
         space_ = getCapacityValueForAllocatedSpace(new_cap);
     }
@@ -654,7 +655,7 @@ constexpr void vector<bool>::resize(size_type count, const value_type& value)
     size_ = count;
 }
 
-void vector<bool>::clear() noexcept
+constexpr void vector<bool>::clear() noexcept
 {
     std::fill(elem_, elem_ + getNumberOfBlocksTypeToAllocateSpace(size_), block_t {});
     size_ = 0;
