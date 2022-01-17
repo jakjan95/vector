@@ -610,6 +610,60 @@ TEST_F(VectorTest, InsertShouldInsertGivenCountRangeOfValueToEmptyVector)
     }
 }
 
+TEST_F(VectorTest, InsertShouldInsertGivenVectorBeforeMiddlePosition)
+{
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
+    const auto numOfValuesToInsert = 5;
+
+    auto vecToInsert = makeVectorWithSameSizeAndCapacity(numOfValuesToInsert, valueToInsert);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+
+    auto middleIterator = vec.begin() + vectorSize / 2;
+    const auto distanceToMiddle = static_cast<std::size_t>(std::distance(vec.begin(), middleIterator));
+
+    const auto vectorSizeAfterInsertion = vec.size() + vecToInsert.size();
+    const auto vectorCapacityAfterInsertion = vec.capacity() * 2;
+    vec.insert(middleIterator, vecToInsert.begin(), vecToInsert.end());
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), vectorCapacityAfterInsertion);
+
+    for (std::size_t i = 0; i < distanceToMiddle; ++i) {
+        EXPECT_EQ(vec[i], newValue);
+    }
+
+    const auto endOfInsertedRange = distanceToMiddle + numOfValuesToInsert;
+    for (std::size_t i = distanceToMiddle; i < endOfInsertedRange; ++i) {
+        EXPECT_EQ(vec[i], valueToInsert);
+    }
+
+    for (std::size_t i = endOfInsertedRange; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], newValue);
+    }
+}
+
+TEST_F(VectorTest, InsertShouldInsertGivenVectorToEmptyVector)
+{
+    auto vec = makeEmptyVector<int>();
+    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.capacity(), 0);
+
+    const auto numOfValuesToInsert = 5;
+    auto vecToInsert = makeVectorWithSameSizeAndCapacity(numOfValuesToInsert, valueToInsert);
+
+    const auto vectorSizeAfterInsertion = numOfValuesToInsert;
+    const auto vectorCapacityAfterInsertion = numOfValuesToInsert;
+    vec.insert(vec.begin(), vecToInsert.begin(), vecToInsert.end());
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), vectorCapacityAfterInsertion);
+
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], valueToInsert);
+    }
+}
+
 TEST_F(VectorTest, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
 {
     auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
