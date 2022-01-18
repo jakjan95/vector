@@ -2,21 +2,23 @@
 ## General Information
 
 Simplified version of vector container from standard template library.
-To manage memory vector uses new expression instead of placement new as it is done in library. Vector offers most of orginal functions but not  all of thier variations.
+To manage memory vector uses simplified allocator, to constructing objects in unitialised memory it uses `construct_at`(c++20) which is wrapper of placement new, for filling/copying to uninitialised memory it uses bunch  of functions from \<memory\> header. Vector offers most of orginal functions but not  all of thier variations.
+
+Bool specialization of vector uses std::uint64_t as a block type to keep inside 64 bits. For bool vector just basic functionality is implemented(without comparisons, iterators and some modifiers).
 
 ## Technologies Used
 Project created with:
-- C++17
+- C++20
 - cmake
 - gtest
 - valgrind
+- clang-format (WebKit style)
 
 ## Setup
-
 Requirements to run project:
 - machine with linux
 - cmake (3.16 or newer)
-- gcc compiler supporting modern c++(c++17 or newer)
+- at least gcc-10 and g++10 which supports c++20
 
 To build examples locally follow the sequence below:
 ```
@@ -44,16 +46,11 @@ v.push_back(13);
 For more use cases check **[Use Cases](main.cpp#L32)**
 
 ## Project Status
-Project is still in progress.
+Generic vector finished, vector of bools needs polishing.
 
 ### TODO:
-#### **vector\<T>**:
-- Adding allocator
-- Improve allocation with placement new
-- Implementation all variations of functions(insert, emplace etc)
-
 #### **vector\<bool>**:
-- Adding Iterators
-- Adding Pointers
-- Functions using iterators(insert, emplace)
-- Comparisions == and <=>
+- Iterators
+- Pointer
+- Modifiers(insert, emplace)
+- Comparisions
