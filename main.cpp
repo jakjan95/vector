@@ -277,13 +277,27 @@ void vectorClearExample()
     std::cout << "Size=" << container.size() << ", Capacity=" << container.capacity() << '\n';
 }
 
-void vectorSimplifiedInsertExample()
+void vectorInsertExample()
 {
     my_vec::vector<int> vec(std::size_t(3), 100);
     std::cout << vec << '\n';
 
     auto it = vec.begin();
     it = vec.insert(it, 200);
+    std::cout << vec << '\n';
+
+    vec.insert(it, 2U, 300);
+    std::cout << vec << '\n';
+
+    // "it" no longer valid, get a new one:
+    it = vec.begin();
+
+    std::vector<int> vec2(2, 400);
+    vec.insert(it + 2, vec2.begin(), vec2.end());
+    std::cout << vec << '\n';
+
+    int arr[] = { 501, 502, 503 };
+    vec.insert(vec.begin(), arr, arr + 3);
     std::cout << vec << '\n';
 }
 
@@ -525,7 +539,7 @@ int main()
     vectorClearExample();
 
     std::cout << "\n vectorInsertExample: \n";
-    vectorSimplifiedInsertExample();
+    vectorInsertExample();
 
     std::cout << "\n vectorEmplaceExample: \n";
     vectorEmplaceExample();
