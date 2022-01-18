@@ -398,7 +398,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(c
         reserve(count);
         pos = elem_ + posDistance;
     } else if (size_ + count >= capacity()) {
-        reserve(2 * capacity());
+        reserve(size() + count);
         pos = elem_ + posDistance;
     }
 
@@ -420,7 +420,7 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(c
         reserve(count);
         pos = elem_ + posDistance;
     } else if (size_ + count >= capacity()) {
-        reserve(2 * capacity());
+        reserve(size() + count);
         pos = elem_ + posDistance;
     }
 

@@ -571,7 +571,7 @@ TEST_F(VectorTest, InsertShouldInsertGivenCountRangeOfValueBeforeMiddlePosition)
     const auto distanceToMiddle = static_cast<std::size_t>(std::distance(vec.begin(), middleIterator));
 
     const auto vectorSizeAfterInsertion = vec.size() + numOfValuesToInsert;
-    const auto vectorCapacityAfterInsertion = vec.capacity() * 2;
+    const auto vectorCapacityAfterInsertion = vec.size() + numOfValuesToInsert;
     vec.insert(middleIterator, numOfValuesToInsert, valueToInsert);
 
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
@@ -623,7 +623,7 @@ TEST_F(VectorTest, InsertShouldInsertGivenVectorBeforeMiddlePosition)
     const auto distanceToMiddle = static_cast<std::size_t>(std::distance(vec.begin(), middleIterator));
 
     const auto vectorSizeAfterInsertion = vec.size() + vecToInsert.size();
-    const auto vectorCapacityAfterInsertion = vec.capacity() * 2;
+    const auto vectorCapacityAfterInsertion = vec.size() + vecToInsert.size();
     vec.insert(middleIterator, vecToInsert.begin(), vecToInsert.end());
 
     EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
