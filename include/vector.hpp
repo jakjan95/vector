@@ -72,6 +72,7 @@ public:
     constexpr iterator insert(const_iterator pos, size_type count, const T& value);
     template <class InputIt>
     constexpr iterator insert(const_iterator pos, InputIt first, InputIt last);
+    constexpr iterator insert(const_iterator pos, std::initializer_list<T> ilist);
     template <typename... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args);
     constexpr iterator erase(const_iterator pos);
@@ -427,6 +428,26 @@ constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(c
     std::uninitialized_copy(first, last, elem_ + posDistance);
 
     size_ += count;
+    return elem_ + posDistance;
+}
+
+template <typename T, typename Allocator>
+constexpr typename vector<T, Allocator>::iterator vector<T, Allocator>::insert(const_iterator pos, std::initializer_list<T> ilist)
+{
+    const auto posDistance = static_cast<size_type>(pos - elem_);
+
+    if (capacity() == 0) {
+        reserve(ilist.size());
+        pos = elem_ + posDistance;
+    } else if (size_ + ilist.size() >= capacity()) {
+        reserve(size() + ilist.size());
+        pos = elem_ + posDistance;
+    }
+
+    std::uninitialized_copy(elem_ + posDistance, elem_ + size_, elem_ + posDistance + ilist.size());
+    std::uninitialized_copy(ilist.begin(), ilist.end(), elem_ + posDistance);
+
+    size_ += ilist.size();
     return elem_ + posDistance;
 }
 

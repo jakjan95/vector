@@ -664,6 +664,60 @@ TEST_F(VectorTest, InsertShouldInsertGivenVectorToEmptyVector)
     }
 }
 
+TEST_F(VectorTest, InsertShouldInsertGivenInitializerListBeforeMiddlePosition)
+{
+    auto vec = makeVectorWithSizeAndCapacity<int>(vectorSize, vectorCapacity, newValue);
+    EXPECT_EQ(vec.size(), vectorSize);
+    EXPECT_EQ(vec.capacity(), vectorCapacity);
+
+    auto middleIterator = vec.begin() + vectorSize / 2;
+    const auto distanceToMiddle = static_cast<std::size_t>(std::distance(vec.begin(), middleIterator));
+
+    const auto initializerLst = { 1, 2, 3, 4, 5 };
+    const auto numOfValuesToInsert = initializerLst.size();
+
+    const auto vectorSizeAfterInsertion = vec.size() + numOfValuesToInsert;
+    const auto vectorCapacityAfterInsertion = vec.size() + numOfValuesToInsert;
+    vec.insert(middleIterator, initializerLst);
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), vectorCapacityAfterInsertion);
+
+    for (std::size_t i = 0; i < distanceToMiddle; ++i) {
+        EXPECT_EQ(vec[i], newValue);
+    }
+
+    std::size_t index = distanceToMiddle;
+    for (const auto el : initializerLst) {
+        EXPECT_EQ(vec[index++], el);
+    }
+
+    for (std::size_t i = index; i < vec.size(); ++i) {
+        EXPECT_EQ(vec[i], newValue);
+    }
+}
+
+TEST_F(VectorTest, InsertShouldInsertGivenInitializerListToEmptyVector)
+{
+    auto vec = makeEmptyVector<int>();
+    EXPECT_TRUE(vec.empty());
+
+    const auto initializerLst = { 1, 2, 3, 4, 5 };
+    const auto numOfValuesToInsert = initializerLst.size();
+    const auto vectorSizeAfterInsertion = vec.size() + numOfValuesToInsert;
+    const auto vectorCapacityAfterInsertion = vec.size() + numOfValuesToInsert;
+
+    vec.insert(vec.begin(), initializerLst);
+
+    EXPECT_EQ(vec.size(), vectorSizeAfterInsertion);
+    EXPECT_EQ(vec.capacity(), vectorCapacityAfterInsertion);
+
+    std::size_t index = 0;
+    for (const auto el : initializerLst) {
+        EXPECT_EQ(vec[index++], el);
+    }
+}
+
 TEST_F(VectorTest, EmplaceBackShouldConstructElementAtTheEndOfContainerAndIncreaseSizeOfContainer)
 {
     auto vec = makeVectorWithSizeAndCapacity<std::string>(vectorSize, vectorCapacity);
